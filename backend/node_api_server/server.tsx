@@ -6,7 +6,7 @@ import McdApi from "./mcdapi"
 
 var cors = require('cors')
 
-const maxAccountsNumber = 15;
+const maxAccountsNumber = 30;
 const dbName = "db.json"
 // These seem to be fixed, for some reason...
 let clientID = "724uBz3ENHxUMrWH73pekFvUKvj8fD7X" // crypto.randomBytes(16).toString('hex');

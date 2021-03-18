@@ -51,7 +51,7 @@ export default class AccountManager {
                         })
 
                         // Rate limit to 5 second intervals
-                    }, 5000*i)
+                    }, 10*i)
                 }
             }
             return;
@@ -74,7 +74,7 @@ export default class AccountManager {
                 // Iterate through each account and get offers
                 let promiseArray : Array<Promise<Offer[]>> = [];
                 let i = 0;
-                const promiseResolveDelayFactor = 3000;
+                const promiseResolveDelayFactor = 20;
                 for(const account of accounts){
                     i += 1;
                     // Create an array of promises that resolve to get offers from each account

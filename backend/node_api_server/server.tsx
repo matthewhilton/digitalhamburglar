@@ -7,7 +7,6 @@ import McdApi from "./mcdapi"
 var cors = require('cors')
 
 const maxAccountsNumber = 30;
-const dbName = "db.json"
 // These seem to be fixed, for some reason...
 let clientID = "724uBz3ENHxUMrWH73pekFvUKvj8fD7X" // crypto.randomBytes(16).toString('hex');
 let clientSecret = "anr4rTy2VRaCfcr9wZE6kVKjSswTv2Rc" //crypto.randomBytes(16).toString('hex');
@@ -17,16 +16,14 @@ const app: express.Application = express();
 app.use(cors())
 
 // Create/Load database
-var Datastore = require('nedb')
-const db = new Datastore({filename: dbName, autoload: true});
 let api = new McdApi(clientID, clientSecret);
-const am = new AccountManager(db, api);
+//const am = new AccountManager(db, api);
 
 let currentOffers : Array<Offer> = [];
 let lastUpdatedOffersTime : null | Date = null;
 let updateStatus : null | string = null
 
-am.fillToMaxAccounts(maxAccountsNumber);
+//am.fillToMaxAccounts(maxAccountsNumber);
 
 app.get('/', function (req, res) {
   res.json("Hello!");
@@ -37,7 +34,9 @@ app.get('/getOffers', (req, res) => {
   res.json(currentOffers);
 })
 
+/*
 app.get('/getOfferCode', (req, res) => {
+  
   // Get params
   const offerParam = Number(req.query?.offerId);
   const propositionParam = Number(req.query?.propositionId);
@@ -116,3 +115,4 @@ app.listen(port, function () {
   updateAllOffers();
 });
 
+*/

@@ -1,4 +1,5 @@
-FROM node:12.2.0-alpine
+FROM node:alpine
+LABEL description="NodeJS Api Endpoint and Processing Server"
 
 WORKDIR /app
 

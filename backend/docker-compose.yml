@@ -7,7 +7,7 @@ services:
     env_file: 
       - ./postgres/database.env
     volumes:
-      - ./postgres/volume:/var/lib/postgresql
+      - ./postgres/volume:/var/lib/postgresql/data
     ports:
       - 5432:5432
     networks:

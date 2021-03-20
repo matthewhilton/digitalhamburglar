@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { Offer, Profile, Token } from "./interfaces";
+import { Offer, Profile, Token } from "./src/interfaces";
 import McdApi from "./mcdapi";
 
 export default class AccountManager {

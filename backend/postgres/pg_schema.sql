@@ -30,6 +30,8 @@ CREATE TABLE public.offers (
 	last_checked timestamp(0) NOT NULL,
 	account_id int8 NOT NULL,
 	expires timestamp(0) NOT NULL,
+	offerbucket varchar NOT NULL,
+	saved date NOT NULL,
 	CONSTRAINT offers_pk PRIMARY KEY (id),
 	CONSTRAINT offers_fk FOREIGN KEY (account_id) REFERENCES accounts(id) ON UPDATE CASCADE ON DELETE CASCADE
 );

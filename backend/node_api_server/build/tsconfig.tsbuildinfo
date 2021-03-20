@@ -452,7 +452,7 @@
         "affectsGlobalScope": false
       },
       "../server.tsx": {
-        "version": "d116745f721ea2ecd21c7a1bb57e08b47263237d6131a20f695a6da35d49b930",
+        "version": "fbb3333028bd8958e717a0162caa44c4da26fa1d09dc86b50133d9ca440908e1",
         "signature": "f761c91419d0a89422a0004ef1a92929dd4d2d5e5c16758654d8b0467d1998c6",
         "affectsGlobalScope": false
       },
@@ -466,7 +466,7 @@
         "signature": "ab6aa3a65d473871ee093e3b7b71ed0f9c69e07d1d4295f45c9efd91a771241d",
         "affectsGlobalScope": false
       },
-      "../../../../../node_modules/@types/pixi.js/index.d.ts": {
+      "../../../../../../node_modules/@types/pixi.js/index.d.ts": {
         "version": "2529c9bcc760635ee7f66d5385d1d52e3c699f15dd45d99a3753a87141fb0f67",
         "signature": "2529c9bcc760635ee7f66d5385d1d52e3c699f15dd45d99a3753a87141fb0f67",
         "affectsGlobalScope": true
@@ -1121,7 +1121,7 @@
       "../node_modules/typescript/lib/lib.scripthost.d.ts",
       "../node_modules/typescript/lib/lib.webworker.importscripts.d.ts",
       "../server.tsx",
-      "../../../../../node_modules/@types/pixi.js/index.d.ts"
+      "../../../../../../node_modules/@types/pixi.js/index.d.ts"
     ]
   },
   "version": "4.1.3"

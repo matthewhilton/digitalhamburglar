@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import crypto from "crypto";
-import { Token, Offer, OfferCode, Profile, Device, ShortProfile } from "./interfaces"
+import { Offer, OfferCode, Profile, Device, ShortProfile } from "./src/interfaces"
 
 export default class McdApi {
     clientSecret: string;

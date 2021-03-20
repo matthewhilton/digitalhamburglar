@@ -1,37 +1,45 @@
 // lib/app.ts
 import express = require('express');
-import AccountManager from './accountManager';
-import { Offer, SanitisedOffer } from './interfaces';
-import McdApi from "./mcdapi"
+import AccountManager from "./src/accountManager"
+import { GraphQLClient } from 'graphql-request'
+import McdApi from './src/mcdapi';
 
-var cors = require('cors')
+// Load environment vairables
+require('dotenv').config()
 
-const maxAccountsNumber = 30;
-// These seem to be fixed, for some reason...
-let clientID = "724uBz3ENHxUMrWH73pekFvUKvj8fD7X" // crypto.randomBytes(16).toString('hex');
-let clientSecret = "anr4rTy2VRaCfcr9wZE6kVKjSswTv2Rc" //crypto.randomBytes(16).toString('hex');
+const maxAccountsNumber : number = parseInt(process.env.MAX_ACCOUNTS_NUMBER || "") || 0;
+
 
 // Create a new express application instance
 const app: express.Application = express();
+var cors = require('cors')
 app.use(cors())
 
-// Create/Load database
-let api = new McdApi(clientID, clientSecret);
-//const am = new AccountManager(db, api);
+// Create GraphQL connection to DB
+const gqlclient = new GraphQLClient(process.env.GRAPHQL_ENDPOINT || "", { headers: {} })
 
-let currentOffers : Array<Offer> = [];
-let lastUpdatedOffersTime : null | Date = null;
-let updateStatus : null | string = null
-
-//am.fillToMaxAccounts(maxAccountsNumber);
 
 app.get('/', function (req, res) {
-  res.json("Hello!");
+  const am = new AccountManager(gqlclient)
+  am.getAllAccounts().then((data) => {
+    const account = data[0]
+    new McdApi().get_offers(account).then((offers) => {
+      
+      // Now save the offers
+      const am = new AccountManager(gqlclient)
+      am.delete_all_offers().then(() => {
+        am.save_offers(offers).then(() => {
+          res.json(offers)
+        })
+      }) 
+
+    }).catch(e => console.error(e))
+  }).catch(e => console.error(e))
 });
 
 // Return the list of offers from the DB
 app.get('/getOffers', (req, res) => {
-  res.json(currentOffers);
+  
 })
 
 /*
@@ -107,12 +115,12 @@ setInterval(() => {
   updateAllOffers();
 }, maxAccountsNumber * 20000)
 
-console.log("Updating offers every " + maxAccountsNumber * 20000 + " ms")
-const port : Number = 4000;
+*/
 
-app.listen(port, function () {
-  console.log('Listening on port ' + port);
-  updateAllOffers();
+console.log("Updating offers every " + maxAccountsNumber * 20000 + " ms")
+
+app.listen(process.env.PORT, function () {
+  console.log('Listening on port ' + process.env.PORT);
+  //updateAllOffers();
 });
 
-*/

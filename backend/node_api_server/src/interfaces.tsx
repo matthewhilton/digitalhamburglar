@@ -1,18 +1,14 @@
 
-export interface Token {
-    accessToken: string, 
-    refreshToken: string,
-}
-
 export interface Offer {
-    id: number,
-    propositionId: number,
+    id: number | null,
+    mcd_offerId: number,
+    mcd_propositionId: number,
     name: string, 
     shortDescription: string, 
     longDescription: string, 
     offerBucket: string, 
     validToUTC: string,
-    profile: ShortProfile,
+    profile: Profile,
 }
 
 export interface SanitisedOffer {
@@ -31,16 +27,11 @@ export interface OfferCode {
     expirationTime: string,
 }
 
-export interface ShortProfile {
-    username: string,
-    password: string,
-}
-
 export interface Profile {
     username: string,
     password: string,
-    active: boolean,
-    _id: string,
+    created: Date,
+    id: number
 }
 
 export interface Device {

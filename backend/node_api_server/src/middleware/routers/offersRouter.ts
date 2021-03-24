@@ -63,4 +63,14 @@ router.get('/update', (req, res) => {
     })
 })
 
+router.get('/redeem', (req, res) => {
+    const externalId: string = req.query.externalId;
+
+    api.get_mcd_offer_details(externalId).then((details) => {
+        mcd_api.get_offer_redemption_code(details.mcd_id, details.mcd_prop_id, details.profile).then((code) => {
+            res.json(code)
+        })
+    })
+})
+
 module.exports = router;

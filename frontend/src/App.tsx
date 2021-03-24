@@ -13,11 +13,10 @@ const theme = {
       height: '20px',
     },
     colors: {
-      brand: "#0d9e33"
+      'brand': "#0d9e33",
     }
   },
 };
-
 
 
 function App() {
@@ -27,12 +26,14 @@ function App() {
         <MainPage>
         
           <Switch>
+            <Route path="/">
+                <OfferList />
+            </Route>
+              
             <Route path="/redeem">
               <OfferRedemption />
             </Route>
-            <Route path="/">
-              <OfferList />
-            </Route>
+            
           </Switch>
           
         </MainPage>

@@ -92,8 +92,6 @@ export default function asciiImageConvert(image_url: string, hash: string): Prom
                         // Query the image element
                         const svgImage = await page.$('#iout');
 
-                        fs.unlinkSync(temp_image_path)
-
                         await delay(2000);
 
                         await svgImage.screenshot({
@@ -116,7 +114,6 @@ export default function asciiImageConvert(image_url: string, hash: string): Prom
                             resolve(image_save_path);
                         })
                         .catch(function(err) {
-                            fs.unlinkSync(temp_image_path)
                             reject(err)
                         });
 

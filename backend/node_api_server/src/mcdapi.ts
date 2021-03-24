@@ -163,9 +163,6 @@ export default class McdApi {
                                 externalId: null,
                                 image: offer.imageBaseName
                             }
-
-                            console.log(offer)
-
                             offers.push(recievedOffer)
                         }
                         resolve(offers)

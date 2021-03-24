@@ -1,19 +1,17 @@
-import { Offer } from "./../../interfaces";
-import { useHistory } from "react-router-dom"
-import { Box, Button} from "grommet";
+import { Box, Button, Image, Text} from "grommet";
 
-const OfferCard = ({offer}: {offer: Offer}) => {
+interface Props {
+    image_url: string;
+    group_title: string;
+    number_available: number;
+}
 
-    const history = useHistory();
-
-    const redeemOffer = (offer: Offer) => {
-        history.push("/redeem?id=" + offer.id + "&propositionId=" + offer.propositionId)
-    }
-
+const OfferCard = (props: Props) => {
     return(
-        <Box style={{flexDirection: "row", justifyContent: "space-between"}}>
-            {offer.name}
-            <Button onClick={() => redeemOffer(offer)} primary size="small" label="Get Redemption Code" />
+        <Box width="150px" flex={{"grow": 0}} margin='10px'>
+            <Image src={props.image_url} />
+            <Text color="brand" size="small" textAlign='center' weight="bold" truncate={true}> {props.group_title} </Text>
+            <Text color="brand" size="xsmall" textAlign='center' > {props.number_available} code(s) available</Text>
         </Box>
     )
 }

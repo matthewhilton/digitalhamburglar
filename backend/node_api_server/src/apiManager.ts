@@ -79,7 +79,7 @@ export default class ApiManager {
                     console.warn("Tried to save punchard reward. Punchcard rewards are not supported. Punchcard rewards will not be saved.")
                 } else {
                     const offer_to_save: OfferInput = {
-                        externalId: sha256(offer.mcd_offerId + offer.mcd_propositionId).toString(),
+                        externalId: sha256(offer.mcd_offerId + offer.mcd_propositionId + offer.profile.id).toString(),
                         title: offer.title,
                         description: offer.longDescription,
                         mcdOfferid: offer.mcd_offerId,

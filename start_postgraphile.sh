@@ -1,1 +1,0 @@
-npx postgraphile -c 'postgres://postgres:docker@localhost/postgres' --watch --enhance-graphiql --dynamic-json

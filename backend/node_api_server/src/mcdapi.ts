@@ -1,7 +1,8 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import crypto from "crypto";
-import { Offer, Profile } from "./interfaces"
+import { Offer, OfferCode, Profile } from "./interfaces"
+import ApiManager from './apiManager';
 
 export default class McdApi {
     clientSecret: string;
@@ -154,13 +155,16 @@ export default class McdApi {
                                 id: null,
                                 mcd_offerId: offer.offerId,
                                 mcd_propositionId: offer.offerPropositionId,
-                                name: offer.name,
-                                shortDescription: offer.shortDescription,
+                                title: offer.name,
                                 longDescription: offer.longDescription,
                                 offerBucket: offer.offerBucket,
                                 validToUTC: offer.validToUTC,
-                                profile: profile
+                                profile: profile,
+                                externalId: null,
+                                image: offer.imageBaseName
                             }
+
+                            console.log(offer)
 
                             offers.push(recievedOffer)
                         }
@@ -168,6 +172,32 @@ export default class McdApi {
                     })
                     .catch(e => reject(e))
             })
+        })
+    }
+
+    get_offer_redemption_code(mcd_offerId: number, mcd_propId: number, account: Profile): Promise<OfferCode> {
+        return new Promise<OfferCode>((resolve, reject) => {
+            this.login(account).then((token) => {
+                var config : AxiosRequestConfig = {
+                    method: 'get',
+                    url: 'https://ap-prod.api.mcd.com/exp/v1/offers/redemption/' + String(mcd_propId)+ "?offerId=" + String(mcd_offerId),
+                    headers: { 
+                            'Authorization': 'Bearer ' + token,
+                            'mcd-clientid': this.clientId,
+                            'Accept-Language': 'en-AU', 
+                            'user-agent': 'MCDSDK/8.0.15 (iPhone; 14.3; en-AU) GMA/6.2'
+                    }  
+                };
+                axios(config).then(res => {
+
+                    const offerCodeData: OfferCode = {
+                        code: res.data.response.randomCode,
+                        barcodeData: res.data.response.barCodeContent,
+                        expirationTime: res.data.response.expirationTime
+                    }
+                    resolve(offerCodeData)
+                }).catch(e => reject(e))
+            }).catch((error) => reject(error))
         })
     }
 }

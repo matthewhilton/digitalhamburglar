@@ -1,13 +1,13 @@
 import { GraphQLClient } from "graphql-request";
-import { Offer, Profile } from "./interfaces";
-import { GET_ALL_ACCOUNTS, CREATE_ACCOUNT, CREATE_OFFER, GET_LIST_OFFERS_ID, DELETE_OFFER_BY_ID } from "./queries";
-import { DeleteOfferByIdInput, DeleteOfferInput, OfferInput } from "./generated/graphql"
+import { Offer, Profile, SimpleOffer } from "./interfaces";
+import { GET_ALL_ACCOUNTS, CREATE_ACCOUNT, CREATE_OFFER, GET_LIST_OFFERS_ID, DELETE_OFFER_BY_ID, GET_OFFER_SIMPLE_LIST, GET_OFFER_MCD_DETAILS, UPDATE_OFFER_CHECKED } from "./queries";
+import { DeleteOfferByIdInput, DeleteOfferInput, OfferInput, QueryAllOffersArgs } from "./generated/graphql"
 import McdApi from "./mcdapi"
 import { v4 as uuidv4 } from 'uuid';
 import crypto from "crypto";
 import sha256 from 'crypto-js/sha256';
 
-export default class AccountManager {
+export default class ApiManager {
     gql_client: GraphQLClient;
 
     constructor(gql_client: GraphQLClient) {
@@ -74,21 +74,27 @@ export default class AccountManager {
             const promise_list: Array<Promise<void>> = [];
 
             for(const offer of offers){
-                const offer_to_save: OfferInput = {
-                    externalId: sha256(offer.mcd_offerId + offer.mcd_propositionId + new Date().toString()).toString(),
-                    title: offer.shortDescription,
-                    description: offer.longDescription,
-                    mcdOfferid: offer.mcd_offerId,
-                    mcdPropid: offer.mcd_propositionId,
-                    lastChecked: new Date(),
-                    accountId: offer.profile.id,
-                    expires: new Date(offer.validToUTC),
-                    offerbucket: offer.offerBucket
+                // TODO work out how to use punchcard offers - right now they give a server error when redeeming
+                if(offer.offerBucket === "PunchcardReward") {
+                    console.warn("Tried to save punchard reward. Punchcard rewards are not supported. Punchcard rewards will not be saved.")
+                } else {
+                    const offer_to_save: OfferInput = {
+                        externalId: sha256(offer.mcd_offerId + offer.mcd_propositionId).toString(),
+                        title: offer.title,
+                        description: offer.longDescription,
+                        mcdOfferid: offer.mcd_offerId,
+                        mcdPropid: offer.mcd_propositionId,
+                        lastChecked: new Date(),
+                        accountId: offer.profile.id,
+                        expires: new Date(offer.validToUTC),
+                        offerbucket: offer.offerBucket,
+                        image: offer.image
+                    }
+    
+                    promise_list.push(this.gql_client.request(CREATE_OFFER, {
+                        input: offer_to_save
+                    }))
                 }
-
-                promise_list.push(this.gql_client.request(CREATE_OFFER, {
-                    input: offer_to_save
-                }))
             }
 
             Promise.all(promise_list).then(() => {
@@ -109,7 +115,7 @@ export default class AccountManager {
     delete_all_offers(): Promise<void> {
         return new Promise((resolve, reject) => {
             
-            // Create list of mutations to run to delete offers given
+            // Create list of mutations to run to delete offers
             this.get_list_offer_id().then((offersIdList) => {
                 let promise_list: Array<Promise<void>> = []
                 for(const id of offersIdList) {
@@ -128,6 +134,55 @@ export default class AccountManager {
                 .then(() => resolve() )
                 .catch(error => reject(error))
             })
+        })
+    }
+
+    get_offers_simple_list(): Promise<Array<SimpleOffer>> {
+        return new Promise((resolve, reject) => {
+            this.gql_client.request(GET_OFFER_SIMPLE_LIST).then((data) => {
+                // Resolve by casting each recived data point into a SimpleOffer 
+                resolve(data.allOffers.nodes.map(offer => {
+                    const recievedOffer: SimpleOffer = {
+                        externalId: offer.externalId,
+                        title: offer.title,
+                        offerBucket: offer.offerbucket,
+                        image: offer.image
+                    }
+                    return recievedOffer
+                }))
+            }).catch(error => reject(error))
+        })
+    }
+
+    get_mcd_offer_details(externalId: string): Promise<{mcd_id: number, mcd_prop_id: number, profile: Profile, id}> {
+        return new Promise((resolve, reject) => {
+            this.gql_client.request(GET_OFFER_MCD_DETAILS, {
+                externalId
+            }).then((data) => {
+                if(data.allOffers.nodes.length == 0) {
+                    reject("No offer found for the given external ID")
+                } else {
+                    const details = data.allOffers.nodes[0]
+
+                    resolve({
+                        mcd_id: details.mcdOfferid,
+                        mcd_prop_id: details.mcdPropid,
+                        profile: details.accountByAccountId as Profile,
+                        id: details.id
+                    })
+                }
+            }).catch((error) => reject(error))
+        })
+    }
+
+    update_offer_checked(offerId: number): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.gql_client.request(UPDATE_OFFER_CHECKED, {
+                id: offerId,
+                lastChecked: new Date()
+            })
+            .then(() => resolve())
+            .catch((error) => reject(error))
         })
     }
 }

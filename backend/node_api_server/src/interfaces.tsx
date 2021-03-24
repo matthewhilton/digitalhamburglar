@@ -1,14 +1,18 @@
 
-export interface Offer {
+export interface Offer extends SimpleOffer {
     id: number | null,
     mcd_offerId: number,
     mcd_propositionId: number,
-    name: string, 
-    shortDescription: string, 
     longDescription: string, 
-    offerBucket: string, 
     validToUTC: string,
     profile: Profile,
+}
+
+export interface SimpleOffer {
+    externalId: string | null,
+    title: string,
+    offerBucket: string, 
+    image: string,
 }
 
 export interface SanitisedOffer {

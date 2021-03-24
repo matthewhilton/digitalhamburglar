@@ -208,6 +208,8 @@ export enum OffersOrderBy {
   ExpiresDesc = 'EXPIRES_DESC',
   OfferbucketAsc = 'OFFERBUCKET_ASC',
   OfferbucketDesc = 'OFFERBUCKET_DESC',
+  ImageAsc = 'IMAGE_ASC',
+  ImageDesc = 'IMAGE_DESC',
   PrimaryKeyAsc = 'PRIMARY_KEY_ASC',
   PrimaryKeyDesc = 'PRIMARY_KEY_DESC'
 }
@@ -234,6 +236,8 @@ export type OfferCondition = {
   expires?: Maybe<Scalars['Datetime']>;
   /** Checks for equality with the object’s `offerbucket` field. */
   offerbucket?: Maybe<Scalars['String']>;
+  /** Checks for equality with the object’s `image` field. */
+  image?: Maybe<Scalars['String']>;
 };
 
 
@@ -264,6 +268,7 @@ export type Offer = Node & {
   accountId: Scalars['BigInt'];
   expires: Scalars['Datetime'];
   offerbucket: Scalars['String'];
+  image: Scalars['String'];
   /** Reads a single `Account` that is related to this `Offer`. */
   accountByAccountId?: Maybe<Account>;
 };
@@ -469,6 +474,7 @@ export type OfferInput = {
   accountId: Scalars['BigInt'];
   expires: Scalars['Datetime'];
   offerbucket: Scalars['String'];
+  image?: Maybe<Scalars['String']>;
 };
 
 /** The output of our create `Offer` mutation. */
@@ -585,6 +591,7 @@ export type OfferPatch = {
   accountId?: Maybe<Scalars['BigInt']>;
   expires?: Maybe<Scalars['Datetime']>;
   offerbucket?: Maybe<Scalars['String']>;
+  image?: Maybe<Scalars['String']>;
 };
 
 /** The output of our update `Offer` mutation. */
@@ -990,6 +997,7 @@ export type OfferResolvers<ContextType = any, ParentType extends ResolversParent
   accountId?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   expires?: Resolver<ResolversTypes['Datetime'], ParentType, ContextType>;
   offerbucket?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  image?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   accountByAccountId?: Resolver<Maybe<ResolversTypes['Account']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };

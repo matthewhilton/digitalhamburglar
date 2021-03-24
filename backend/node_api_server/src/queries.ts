@@ -53,3 +53,46 @@ mutation DeleteOffer($id: BigInt!){
   }
 }
 `
+
+export const GET_OFFER_SIMPLE_LIST = gql`
+query {
+  allOffers {
+   nodes {
+      externalId
+      title
+    	offerbucket
+      image
+    }
+  }
+}
+`
+
+export const GET_OFFER_MCD_DETAILS = gql`
+query QueryOfferByExternalId($externalId: String!){
+  allOffers(condition: {
+    externalId: $externalId
+  }) {
+    nodes {
+      id
+      mcdPropid
+      mcdOfferid
+      accountByAccountId {
+        username
+        password
+        created
+        id
+      }
+    }
+  }
+}
+`
+
+export const UPDATE_OFFER_CHECKED = gql`
+mutation UpdateOfferLastChecked($id: BigInt!, $lastChecked: Datetime!){
+  updateOfferById(input: { id: $id, offerPatch: { lastChecked: $lastChecked }}) {
+    offer {
+      id
+    }
+  }
+}
+`

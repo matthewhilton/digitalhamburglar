@@ -16,6 +16,11 @@ router.get('/ascii', (req, res, next) => {
     // TODO add key checks
     const image_key = req.query.image
 
+    if(image_key == null || image_key == undefined || image_key == "undefined"){
+        console.log("Image key was undefined")
+        return res.status(400, "Image was null")
+    }
+
     const url = base_url + image_key
 
     const image_hash = sha256(url).toString() 
@@ -32,11 +37,10 @@ router.get('/ascii', (req, res, next) => {
             asciiImageConvert(url, image_hash).then((path) => {
                 console.log(path)
                 redirectToPublic(res, image_hash)
-
             }).catch(() => res.status(500))
         }
     } catch {
-        res.status(500)
+        return res.status(500);
     }
 })
 

@@ -24,6 +24,10 @@ router.get('/list', (req, res, next) => {
     })
 })
 
+router.get('/details', (req, res, next) => {
+    api.get_offer_more_details(req.query.externalId).then((data) => res.json(data)).catch(e => res.send_status(500))
+})
+
 const groupBy = key => array =>
   array.reduce((objectsByKeyValue, obj) => {
     const value = obj[key];

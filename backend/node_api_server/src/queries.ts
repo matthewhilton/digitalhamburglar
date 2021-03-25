@@ -96,3 +96,20 @@ mutation UpdateOfferLastChecked($id: BigInt!, $lastChecked: Datetime!){
   }
 }
 `
+
+export const QUERY_BY_EXTERNAL_ID = gql`
+query QueryOfferByExternalId($externalId: String!){
+  allOffers(condition: {
+    externalId: $externalId
+  }) {
+    nodes {
+      title
+      description
+      externalId
+      expires
+      image
+      lastChecked
+    }
+  }
+}
+`

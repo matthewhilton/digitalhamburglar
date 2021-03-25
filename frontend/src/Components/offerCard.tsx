@@ -8,7 +8,7 @@ interface Props {
 
 const OfferCard = (props: Props) => {
     return(
-        <Box width="150px" flex={{"grow": 0}} margin='10px'>
+        <Box width="130px" flex={{"grow": 1}} margin='medium'>
             <Image src={props.image_url} />
             <Text color="brand" size="small" textAlign='center' weight="bold" truncate={true}> {props.group_title} </Text>
             <Text color="brand" size="xsmall" textAlign='center' > {props.number_available} code(s) available</Text>

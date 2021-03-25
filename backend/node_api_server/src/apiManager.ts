@@ -1,6 +1,6 @@
 import { GraphQLClient } from "graphql-request";
 import { Offer, Profile, SimpleOffer } from "./interfaces";
-import { GET_ALL_ACCOUNTS, CREATE_ACCOUNT, CREATE_OFFER, GET_LIST_OFFERS_ID, DELETE_OFFER_BY_ID, GET_OFFER_SIMPLE_LIST, GET_OFFER_MCD_DETAILS, UPDATE_OFFER_CHECKED } from "./queries";
+import { GET_ALL_ACCOUNTS, CREATE_ACCOUNT, CREATE_OFFER, GET_LIST_OFFERS_ID, DELETE_OFFER_BY_ID, GET_OFFER_SIMPLE_LIST, GET_OFFER_MCD_DETAILS, UPDATE_OFFER_CHECKED, QUERY_BY_EXTERNAL_ID } from "./queries";
 import { DeleteOfferByIdInput, DeleteOfferInput, OfferInput, QueryAllOffersArgs } from "./generated/graphql"
 import McdApi from "./mcdapi"
 import { v4 as uuidv4 } from 'uuid';
@@ -156,6 +156,7 @@ export default class ApiManager {
 
     get_mcd_offer_details(externalId: string): Promise<{mcd_id: number, mcd_prop_id: number, profile: Profile, id}> {
         return new Promise((resolve, reject) => {
+            console.log(externalId)
             this.gql_client.request(GET_OFFER_MCD_DETAILS, {
                 externalId
             }).then((data) => {
@@ -183,6 +184,33 @@ export default class ApiManager {
             })
             .then(() => resolve())
             .catch((error) => reject(error))
+        })
+    }
+
+    get_offer_more_details(externalId: string): Promise<{
+        title: string
+        description: string
+        externalId: string
+        expires: string
+        image: string
+        lastChecked: string
+    }> {
+        return new Promise((resolve, reject) => {
+            this.gql_client.request(QUERY_BY_EXTERNAL_ID, {
+                externalId,
+            })
+            .then((data) => {
+                const offer = data.allOffers.nodes[0]
+                resolve({
+                    title: offer.title,
+                    description: offer.description,
+                    externalId: offer.externalId,
+                    expires: offer.expires,
+                    image: offer.image,
+                    lastChecked: offer.lastChecked
+                })
+                
+            })
         })
     }
 }

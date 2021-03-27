@@ -25,7 +25,14 @@ router.get('/list', (req, res, next) => {
 })
 
 router.get('/details', (req, res, next) => {
-    api.get_offer_more_details(req.query.externalId).then((data) => res.json(data)).catch(e => res.send_status(500))
+    const externalId = req.query.externalId
+    if(externalId === null || externalId === undefined || externalId === 'undefined') {
+        res.sendStatus(500)
+        return;
+    } else {
+        api.get_offer_more_details(req.query.externalId).then((data) => res.json(data)).catch(e => res.sendStatus(500))
+        return;
+    }
 })
 
 const groupBy = key => array =>

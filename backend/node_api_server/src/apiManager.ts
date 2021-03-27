@@ -201,15 +201,18 @@ export default class ApiManager {
             })
             .then((data) => {
                 const offer = data.allOffers.nodes[0]
-                resolve({
-                    title: offer.title,
-                    description: offer.description,
-                    externalId: offer.externalId,
-                    expires: offer.expires,
-                    image: offer.image,
-                    lastChecked: offer.lastChecked
-                })
-                
+                if(offer){
+                    resolve({
+                        title: offer.title,
+                        description: offer.description,
+                        externalId: offer.externalId,
+                        expires: offer.expires,
+                        image: offer.image,
+                        lastChecked: offer.lastChecked
+                    })
+                } else {
+                    reject("No offer found")
+                }
             })
         })
     }

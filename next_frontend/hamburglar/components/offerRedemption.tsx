@@ -16,7 +16,7 @@ const OfferRedemption = ({externalId}: {externalId: string}) => {
     const [offer, setOffer] = useState<OfferResponse | null>({ error: null, data: null})
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/offers/redeem?externalId=${externalId}`)
+        fetch(`${process.env.API_ENDPOINT}/offers/redeem?externalId=${externalId}`)
         .then(res => res.json())
         .then(data => setOffer({
             error: null,

@@ -72,9 +72,13 @@ router.get('/update', async (req, res) => {
 
     // Destruct the outer array
     const reducer = (accumulator, currentValue) => [...currentValue, ...accumulator];
-    const offers = offerCheckResponses.reduce(reducer)
+    const offersAcrossAllAccounts = offerCheckResponses.reduce(reducer)
 
-    res.json(offers)
+    // Drop all offers then Save the new offers in DB 
+    await api.delete_all_offers()
+    await api.save_offers(offersAcrossAllAccounts)
+
+    res.json(offersAcrossAllAccounts)
 })
 
 router.get('/redeem', async (req, res) => {

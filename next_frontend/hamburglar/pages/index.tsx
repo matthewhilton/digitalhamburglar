@@ -1,10 +1,11 @@
-import styles from '../styles/Home.module.css'
+import { Heading, Container } from '@chakra-ui/layout'
 import { useRouter } from 'next/router'
+import OfferGrid from '../components/offerGrid'
 import OfferImage from '../components/offerImage'
 import { ApiResponse } from '../interfaces/apiInterfaces'
 
 export async function getStaticProps() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/offers/list`)
+  const res = await fetch(`${process.env.API_ENDPOINT}/offers/list/groups`)
   const errorCode = res.ok ? false : res.status
   const json = await res.json()
   
@@ -12,26 +13,10 @@ export async function getStaticProps() {
 }
 
 export default function Home(props) {
-  const router = useRouter()
-
-  const goToOffer = (offerKey: string) => {
-    // Choose a random offer key (to mitigate collisions between users)
-    const offers = props.data[offerKey]
-    const selectedOffer = offers[Math.floor(Math.random() * Math.floor(offers.length))] 
-
-    router.push('/offer/' + encodeURIComponent(selectedOffer.externalId))
-  }
-
-  return (
-    <div className={styles.container}>
-      <h1> Digital Hamburglar </h1>
-
-      {Object.keys(props.data).map(offerKey => (
-        <div key={offerKey}>   
-          <button onClick={() => goToOffer(offerKey)}>{offerKey}</button>
-          <OfferImage image={props.data[offerKey][0].image} style={{width: "150px"}} />
-        </div>
-      ))}
-    </div>
+return (
+    <Container maxW="container.md" centerContent={true}>
+      <Heading bgGradient="linear(to-l, #00db0f,#5fdb00)" fontWeight="extrabold" bgClip="text" marginBottom={3}> Digital Hamburglar </Heading>
+      <OfferGrid offerGroups={props.data}/>
+    </Container>
   )
 }

@@ -16,7 +16,7 @@ router.get('/ascii', (req, res, next) => {
     // TODO add key checks
     const image_key = req.query.image
 
-    if(image_key == null || image_key == undefined || image_key == "undefined"){
+    if(!image_key || image_key == "undefined"){
         console.log("Image key was undefined")
         return res.status(400, "Image was null")
     }

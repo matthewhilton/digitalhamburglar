@@ -1,5 +1,5 @@
 interface RestProps {
-    style
+    style?
 }
 
 const OfferImage = ({image, ...restProps}: { image: string} & RestProps) => {

@@ -3,28 +3,26 @@ import { useState } from 'react'
 import useSWR from 'swr'
 import OfferImage from '../../components/offerImage'
 import OfferRedemption from '../../components/offerRedemption'
+import { ApiResponse, OfferDetails } from '../../interfaces/apiInterfaces'
 
-const fetcher = url => fetch(url).then(r => r.json())
+export const getServerSideProps = async (context) => {
+    if(!context.params){
+        // No externalID given, return error
+        return { props: { error: "No externalId given", data: null } as ApiResponse } 
+    }
 
-interface OfferDetails {
-    title: string,
-    description: string,
-    externalId: string,
-    expires: string,
-    image: string,
-    lastchecked: string,
-}
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/offers/details?externalId=${context.params.externalId}`)
+    const errorCode = res.ok ? false : res.status
+    const json = await res.json()
+    
+    return { props: { error: errorCode ? json : null, data: !errorCode ? json : null } as ApiResponse } 
+  }
 
-const OfferDetails = () => {
+const OfferInformationPage = ({ data, error }: ApiResponse) => {
     const [offerRedeemOpen, setOfferRedeemOpen] = useState(false)
-    const router = useRouter()
-    const { externalId } = router.query
-
-    const {data, error} = useSWR(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/offers/details?externalId=${externalId}`, fetcher)
-
-    const offer = data as OfferDetails
 
     if(data && !error){
+        const offer = data as OfferDetails
         return(
             <div>
                 <h1>{offer.title}</h1>
@@ -32,15 +30,15 @@ const OfferDetails = () => {
                 <p> Expires {new Date(offer.expires).toDateString()} </p>
                 <OfferImage image={offer.image}/>
                 
-                { !offerRedeemOpen ? <button onClick={() => setOfferRedeemOpen(true)}> Redeem </button> : <OfferRedemption externalId={externalId as string} /> }
+                { !offerRedeemOpen ? <button onClick={() => setOfferRedeemOpen(true)}> Redeem </button> : <OfferRedemption externalId={offer.externalId as string} /> }
             </div>
         )
     } else {
         return(
-            <h1> Error! </h1> 
+            <h1> {error} </h1> 
         )
     }
     
   }
   
-  export default OfferDetails
+  export default OfferInformationPage

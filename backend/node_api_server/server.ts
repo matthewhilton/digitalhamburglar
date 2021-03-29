@@ -1,7 +1,9 @@
 // lib/app.ts
 import express = require('express');
+require('express-async-errors');
 const offersRouter = require('./src/middleware/routers/offersRouter');
 const imageRouter = require('./src/middleware/routers/imageRouter');
+const errorHandler = require('./src/middleware/errorHandler');
 
 // Load environment vairables
 require('dotenv').config()
@@ -16,6 +18,7 @@ app.use(cors())
 app.use(express.static('public'))
 app.use('/offers', offersRouter)
 app.use('/image', imageRouter)
+app.use(errorHandler)
 
 app.listen(process.env.PORT, function () {
   console.log('Listening on port ' + process.env.PORT);

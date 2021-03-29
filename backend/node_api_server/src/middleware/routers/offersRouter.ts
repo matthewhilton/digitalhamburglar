@@ -14,25 +14,21 @@ const api = new ApiManager(gqlclient)
 const mcd_api = new McdApi()
 
 // List of offers in simple format
-router.get('/list', (req, res, next) => {
-    api.get_offers_simple_list().then((offers) => {
-        // Don't send actual offer id's, only send a list of available offers and the number of them available 
-        const groupByTitle = groupBy('title')
-        const grouped_offers = groupByTitle(offers)
+router.get('/list', async (req, res, next) => {
+    const offers = await api.get_offers_simple_list()
 
-        res.json(grouped_offers)
-    })
+    const groupByTitle = groupBy('title')
+    const offersGroupedByTitle = groupByTitle(offers)
+
+    res.json(offersGroupedByTitle)
 })
 
-router.get('/details', (req, res, next) => {
+router.get('/details', async (req, res, next) => {
     const externalId = req.query.externalId
-    if(externalId === null || externalId === undefined || externalId === 'undefined') {
-        res.sendStatus(500)
-        return;
-    } else {
-        api.get_offer_more_details(req.query.externalId).then((data) => res.json(data)).catch(e => res.sendStatus(500))
-        return;
-    }
+    if(!externalId || externalId == 'undefined') return res.sendStatus(500)
+
+    const offersDetails = await api.get_offer_more_details(externalId)
+    return res.json(offersDetails)
 })
 
 const groupBy = key => array =>
@@ -43,45 +39,24 @@ const groupBy = key => array =>
   }, {});
 
 // TODO DEBUG get rid of in production, put on a timer and move out of router
-router.get('/update', (req, res) => {
-    api.getAllAccounts().then((accounts) => {
-        let offer_check_promises: Array<Promise<Offer[]>> = []
-        for(const account of accounts) {
-            offer_check_promises.push(
-                mcd_api.get_offers(account)
-            )
-        }
+router.get('/update', async (req, res) => {
+    const accounts = await api.getAllAccounts()
+    const offerChecks: Promise<Offer[]>[] = accounts.map(account => mcd_api.get_offers(account))
+    const offerCheckResponses = await Promise.all(offerChecks)
 
-        api.delete_all_offers().then(() => {
-            Promise.all(offer_check_promises).then((data) => {
-                // Desctruct the promise return value
-                // Destruct the outer array
-                let offers : Offer[] = [];
-                for(const resultArray of data){
-                    let thisOffer: any = resultArray;
-    
-                    if(thisOffer != null){
-                        offers = [...offers, ...thisOffer];
-                    }
-                }
-    
-                // Save the offers into the db for easy access later
-                api.save_offers(offers).then(() => {
-                    res.json(offers)
-                })
-            })
-        }) 
-    })
+    // Destruct the outer array
+    const reducer = (accumulator, currentValue) => [...currentValue, ...accumulator];
+    const offers = offerCheckResponses.reduce(reducer)
+
+    res.json(offers)
 })
 
-router.get('/redeem', (req, res) => {
+router.get('/redeem', async (req, res) => {
     const externalId: string = req.query.externalId;
 
-    api.get_mcd_offer_details(externalId).then((details) => {
-        mcd_api.get_offer_redemption_code(details.mcd_id, details.mcd_prop_id, details.profile).then((code) => {
-            res.json(code)
-        })
-    })
+    const mcdDetails = await api.get_mcd_offer_details(externalId)
+    const redemptionCode = await mcd_api.get_offer_redemption_code(mcdDetails.mcd_id, mcdDetails.mcd_prop_id, mcdDetails.profile)
+    res.json(redemptionCode)
 })
 
 module.exports = router;

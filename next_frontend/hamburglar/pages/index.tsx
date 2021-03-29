@@ -1,20 +1,17 @@
 import styles from '../styles/Home.module.css'
 import { useRouter } from 'next/router'
 import OfferImage from '../components/offerImage'
+import { ApiResponse } from '../interfaces/apiInterfaces'
 
 export async function getStaticProps() {
-
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/offers/list`)
-  const data = await res.json()
-
-  return {
-      props: { data }
-  }
+  const errorCode = res.ok ? false : res.status
+  const json = await res.json()
+  
+  return { props: { error: errorCode ? json : null, data: !errorCode ? json : null } as ApiResponse } 
 }
 
-
 export default function Home(props) {
-
   const router = useRouter()
 
   const goToOffer = (offerKey: string) => {
@@ -24,7 +21,6 @@ export default function Home(props) {
 
     router.push('/offer/' + encodeURIComponent(selectedOffer.externalId))
   }
-
 
   return (
     <div className={styles.container}>

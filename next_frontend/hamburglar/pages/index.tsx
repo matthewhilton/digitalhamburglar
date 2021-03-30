@@ -15,7 +15,7 @@ export async function getStaticProps() {
 export default function Home(props) {
 return (
     <Container maxW="container.md" centerContent={true}>
-      <Heading bgGradient="linear(to-l, #00db0f,#5fdb00)" fontWeight="extrabold" bgClip="text" marginBottom={3}> Digital Hamburglar </Heading>
+      <Heading bgGradient="linear(to-t, #0f1,#0bffaf)" fontWeight="extrabold" bgClip="text" marginBottom={3}> Digital Hamburglar </Heading>
       <OfferGrid offerGroups={props.data}/>
     </Container>
   )

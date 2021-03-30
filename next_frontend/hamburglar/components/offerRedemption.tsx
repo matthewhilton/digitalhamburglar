@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import bwipjs from "bwip-js"
 import { Center, VStack, Heading, Box } from "@chakra-ui/react"
 import ErrorDisplay from "./errorDisplay";
+import { CubeSpinner } from "react-spinners-kit";
 
 const fetcher = url => fetch(url).then(r => r.json())
 
@@ -53,17 +54,19 @@ const OfferRedemption = ({externalId}: {externalId: string}) => {
     return(
         <Center>
             {!offer.loading && !offer.error && offer.data &&
-            <VStack> 
-                <Heading color="white"> {offer.data.code} </Heading>
-                <Box p={2} borderRadius="lg" background="white">
-                    <canvas id="codeCanvas" style={{width: '100%', height: '100%', maxWidth: 250, maxHeight: 250, minWidth: 150, minHeight: 150, backgroundColor: "white"}} />
-                </Box>
-            </VStack>}
+                <VStack> 
+                    <Heading color="white"> {offer.data.code} </Heading>
+                    <Box p={2} borderRadius="lg" background="white">
+                        <canvas id="codeCanvas" style={{width: '100%', height: '100%', maxWidth: 250, maxHeight: 250, minWidth: 150, minHeight: 150, backgroundColor: "white"}} />
+                    </Box>
+                </VStack>}
             {offer.loading &&
-                <Heading color="white"> Loading... </Heading>
+                <Center height="270px">
+                    <CubeSpinner backColor="#00ff00" frontColor="green"/>
+                </Center>
             }
             {offer.error &&
-                <ErrorDisplay error={offer.error} />
+                <ErrorDisplay showButton={false} error={offer.error} />
             }
         </Center>
     )

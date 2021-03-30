@@ -7,16 +7,21 @@ const theme = extendTheme({
     heading: "Bitter",
     body: "Arial"
   },
+  styles: {
+    global: {
+      body: {
+        bg: "black"
+      }
+    }
+  }
 })
 
 function MyApp({ Component, pageProps }) {
   return(
     <ChakraProvider theme={theme}>
-      <Box background="black">
         <Box m={5} flex={1}>
           <Component {...pageProps} />
         </Box>
-      </Box>
     </ChakraProvider>
   )
 }

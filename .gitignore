@@ -2,3 +2,5 @@
 backend/postgres/volume
 node_modules
 dev
+backend/nginx/ssl/RootCA.key
+backend/nginx/ssl/RootCA.crt

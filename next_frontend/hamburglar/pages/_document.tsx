@@ -10,21 +10,6 @@ class MyDocument extends Document {
     return (
       <Html>
         <Head>
-        <style global jsx>{`
-          html,
-          body {
-            margin: 0;
-            background-color: black;
-          }
-          #next {
-            background: black;
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-          }
-        `}</style>
           <link rel="preconnect" href="https://fonts.gstatic.com" />
           <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400;500;700&family=Work+Sans:wght@700&display=swap" rel="stylesheet" /> 
         </Head>

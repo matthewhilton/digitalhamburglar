@@ -6,7 +6,7 @@ interface RestProps {
 
 const OfferImage = ({image, ...restProps}: { image: string} & RestProps) => {
     return(
-        <Image src={`/api/image/ascii/?image=${image}`} {...restProps} borderRadius="5px" />
+        <Image src={`${process.env.NEXT_PUBLIC_API_ENDPOINT}/image/ascii/?image=${image}`} {...restProps} borderRadius="5px" />
     )
 }
 

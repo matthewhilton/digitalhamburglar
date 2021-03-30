@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import bwipjs from "bwip-js"
+import { Center, VStack, Heading, Box } from "@chakra-ui/react"
+import ErrorDisplay from "./errorDisplay";
 
 const fetcher = url => fetch(url).then(r => r.json())
 
@@ -10,21 +12,31 @@ interface OfferResponse {
         barcodeData: string,
         expirationTime: string,
     }
+    loading: boolean
 }
 
 const OfferRedemption = ({externalId}: {externalId: string}) => {
-    const [offer, setOffer] = useState<OfferResponse | null>({ error: null, data: null})
+    const [offer, setOffer] = useState<OfferResponse | null>({ error: null, data: null, loading: false})
 
     useEffect(() => {
+
+        setOffer({
+            error: null,
+            data: null,
+            loading: true
+        })
+
         fetch(`/api/offers/redeem?externalId=${externalId}`)
         .then(res => res.json())
         .then(data => setOffer({
             error: null,
-            data: data
+            data: data,
+            loading: false
         }))
         .catch(() => setOffer({
             error: "Error getting redemption code",
-            data: null
+            data: null,
+            loading: false,
         }))
     }, [externalId, setOffer])
 
@@ -38,22 +50,23 @@ const OfferRedemption = ({externalId}: {externalId: string}) => {
         }
     }, [offer.data])
 
-    if(offer.data && !offer.error){
-        return(
-            <div>
-                <h1> {offer.data.code} </h1>
-                <canvas id="codeCanvas" style={{width: '100%', height: '100%', maxWidth: 300, maxHeight: 300}} />
-            </div>
-        )
-    } else if(offer.error) {
-        return(
-            <h1> Error! </h1>
-        )
-    } else {
-        return(
-            <h1> Loading </h1>
-        )
-    }
+    return(
+        <Center>
+            {!offer.loading && !offer.error && offer.data &&
+            <VStack> 
+                <Heading color="white"> {offer.data.code} </Heading>
+                <Box p={2} borderRadius="lg" background="white">
+                    <canvas id="codeCanvas" style={{width: '100%', height: '100%', maxWidth: 250, maxHeight: 250, minWidth: 150, minHeight: 150, backgroundColor: "white"}} />
+                </Box>
+            </VStack>}
+            {offer.loading &&
+                <Heading color="white"> Loading... </Heading>
+            }
+            {offer.error &&
+                <ErrorDisplay error={offer.error} />
+            }
+        </Center>
+    )
 }
 
 export default OfferRedemption

@@ -17,7 +17,7 @@ class MyDocument extends Document {
             background-color: black;
           }
           #next {
-            background: blue;
+            background: black;
             position: absolute;
             top: 0;
             bottom: 0;

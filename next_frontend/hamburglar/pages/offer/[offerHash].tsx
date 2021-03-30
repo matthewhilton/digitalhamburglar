@@ -7,6 +7,7 @@ import { ApiResponse, OfferDetails } from '../../interfaces/apiInterfaces'
 import { Container, Heading, HStack, Text } from '@chakra-ui/layout'
 import { Button, Divider, Flex, Box, Spacer, CloseButton } from "@chakra-ui/react"
 import { IoChevronBackCircleSharp } from "react-icons/io5";
+import ErrorDisplay from '../../components/errorDisplay'
 
 export const getServerSideProps = async (context) => {
     if(!context.params.offerHash){
@@ -44,7 +45,7 @@ const OfferInformationPage = ({ data, error }: ApiResponse) => {
                         { offerRedeemOpen && <OfferRedemption externalId={offer.externalId as string} /> }
                         </Flex>
 
-                        <Text textAlign="center" color="green"> Expires {new Date(offer.expires).toDateString()} </Text>
+                        <Text textAlign="center" color="green" fontWeight="bold"> Expires {new Date(offer.expires).toDateString()} </Text>
                         <Text textAlign="center" color="green" fontSize='9px' isTruncated={true} > {offer.externalId} </Text> 
                     </Flex>
                 </Container>
@@ -52,7 +53,7 @@ const OfferInformationPage = ({ data, error }: ApiResponse) => {
         )
     } else {
         return(
-            <h1> {error} </h1> 
+            <ErrorDisplay error={JSON.stringify(error)} />
         )
     }
   }

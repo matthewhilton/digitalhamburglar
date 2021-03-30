@@ -1,10 +1,10 @@
-FROM node:latest
+FROM node:alpine
 LABEL description="NodeJS Api Endpoint and Processing Server"
 
 WORKDIR /app
 
-RUN npm i nodemon -g
-RUN npm i ts-node -g
+#RUN npm i nodemon -g
+#RUN npm i ts-node -g
 
 # Install server node_modules
 COPY ./package.json .
@@ -14,8 +14,10 @@ RUN npm install
 
 COPY . .
 
+RUN npm run tsc
+
 # Run server as cmd
-CMD ["nodemon", "./server.ts"]
+CMD ["npm", "run", "start"]
 
 # Expose server port
 EXPOSE 4000

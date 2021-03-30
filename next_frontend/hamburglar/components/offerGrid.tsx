@@ -28,7 +28,7 @@ const OfferGrid = ({offerGroups, ...props}: Props) => {
 
 const OfferGridCard = ({offerGroup}: { offerGroup: OfferGroup}) => (
     <NextLink href="/offer/[offerHash]" as={'/offer/' + encodeURIComponent(offerGroup.hash)}>
-        <Box bg="gray.900" p={3} borderRadius="lg">
+        <Box bg="gray.900" p={3} borderRadius="lg" maxWidth={250}>
             <OfferImage image={offerGroup.image} style={{width: "300px"}} />
             <Text color="gray.100" fontWeight="bold" noOfLines={4} p={1}>{offerGroup.title}</Text>
         </Box>

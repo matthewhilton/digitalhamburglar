@@ -8,7 +8,7 @@ export async function getStaticProps() {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/offers/list/groups`)
   const errorCode = res.ok ? false : res.status
   const json = await res.json()
-  
+
   return { props: { error: errorCode ? json : null, data: !errorCode ? json : null } as ApiResponse } 
 }
 

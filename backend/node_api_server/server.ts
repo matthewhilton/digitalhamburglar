@@ -17,7 +17,11 @@ app.use(cors())
 
 app.use(express.static('public'))
 app.use('/offers', offersRouter)
-app.use('/image', imageRouter)
+// Image routes are disabled temporarily
+//app.use('/image', imageRouter)
+app.use('/', (req, res) => {
+  res.send("It works!")
+})
 app.use(errorHandler)
 
 app.listen(process.env.PORT, function () {

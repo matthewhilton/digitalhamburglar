@@ -3,7 +3,7 @@ import { SimpleGrid, Box, Text } from "@chakra-ui/react"
 import NextLink from "next/link"
 
 interface Props {
-    offerGroups: [OfferGroup]
+    offerGroups: Array<OfferGroup>
 }
 
 interface OfferGroup {
@@ -13,6 +13,12 @@ interface OfferGroup {
 }
 
 const OfferGrid = ({offerGroups, ...props}: Props) => { 
+    if(offerGroups.length == 0){
+        return(
+            <Text fontWeight="bold" color="white"> No Offers Available Currently </Text> 
+        )
+    }
+
     return(
         <SimpleGrid minChildWidth="120px" spacing="10px">
             { offerGroups.map(offerGroup => <OfferGridCard offerGroup={offerGroup} key={offerGroup.hash} /> )}

@@ -1,19 +1,24 @@
-import { useLocation, useHistory} from 'react-router-dom'
+import { useParams, useHistory} from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { OfferCode } from "./../../interfaces"
 import bwipjs from "bwip-js"
-import { Accordion, AccordionPanel, Box, Button, Card, CardBody, CardFooter, CardHeader, Heading, Text } from 'grommet'
+import { Accordion, AccordionPanel, Box, Button, Card, CardBody, CardFooter, CardHeader, Heading, Image, Text } from 'grommet'
 
-function useQuery() {
-    return new URLSearchParams(useLocation().search);
-  }
+interface Details {
+    title: string
+    description: string
+    externalId: string
+    expires: string
+    image: string
+    lastChecked: string
+}
 
 const OfferRedemption = (props: any) => {
-    const query = useQuery();
-    const id = query.get("id");
-    const propositionId = query.get("propositionId");
+    let params: { externalId } = useParams();
+    const externalId = params.externalId
 
     const [code, setCode] = useState<OfferCode | null>(null);
+    const [details, setDetails] = useState<Details | null>(null);
     const [error, setError] = useState<String | null>(null)
 
     const history = useHistory();
@@ -22,20 +27,36 @@ const OfferRedemption = (props: any) => {
         setCode(null)
         // @ts-ignore 
         const env = process.env
-        fetch(env.REACT_APP_API_ENDPOINT + "/getOfferCode?offerId=" + id + "&propositionId=" + propositionId).then(response => {
-            if(response.status == 200){
-                response.json().then((data) => {
-                    setCode(data)
-                })
-            } else {
-                setError("Error getting redemption code")
-            }
-        })
+
+        if(externalId != null){
+            fetch(env.REACT_APP_API_ENDPOINT + "/offers/redeem?externalId=" + externalId).then(response => {
+                if(response.status == 200){
+                    response.json().then((data) => {
+                        setCode(data)
+                    })
+                } else {
+                    setError("Error getting redemption code")
+                }
+            })
+
+            fetch(env.REACT_APP_API_ENDPOINT + "/offers/details?externalId=" + externalId).then(response => {
+                if(response.status == 200){
+                    response.json().then((data) => {
+                        setDetails(data)
+                    })
+                } else {
+                    setError("Error getting offer details")
+                }
+            })
+        } else {
+            // TODO something
+            alert("URL Malformed")
+        }       
     }
 
     useEffect(() => {
         loadCodeData();
-    }, [id, propositionId]);
+    }, [externalId]);
 
     useEffect(() => {
         if(code != null){
@@ -43,14 +64,25 @@ const OfferRedemption = (props: any) => {
                 bcid: "azteccode",
                 text: code.barcodeData
             } 
-            bwipjs.toCanvas("codeCanvas", options)
+            //bwipjs.toCanvas("codeCanvas", options)
         }
     }, [code])
 
     return(
         <div>
-
-            <Box>
+            
+            <Box direction="row" justify="center" gap="small">
+                <Box width="small">
+                    <Image src={process.env.REACT_APP_API_ENDPOINT + "/image/ascii?image=" + details?.image} />
+                </Box>
+                <Box width="small">
+                    <Text weight="bold" color="brand">{details?.title}</Text>
+                    <Text color="brand"> Expires {new Date(details?.expires || '').toDateString()} </Text>
+                </Box>
+            </Box>
+        {
+            /*
+ <Box>
                 <Card background="light-1" pad="small" align="center">
                     <CardHeader>
                         <Heading>{code?.code}</Heading> 
@@ -79,6 +111,9 @@ const OfferRedemption = (props: any) => {
                     </Box>
                 </AccordionPanel>
             </Accordion>
+            */
+        }
+           
         </div> 
     )
 }

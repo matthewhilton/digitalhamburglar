@@ -1,0 +1,4 @@
+*.env
+backend/postgres/volume
+node_modules
+dev

@@ -1,4 +1,4 @@
-import { HashRouter as Router, Route, Switch } from "react-router-dom"
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom"
 import OfferList from './Pages/offerList';
 import './index.css';
 import OfferRedemption from "./Pages/offerRedemption";
@@ -13,11 +13,10 @@ const theme = {
       height: '20px',
     },
     colors: {
-      brand: "#0d9e33"
+      'brand': "#0d9e33",
     }
   },
 };
-
 
 
 function App() {
@@ -25,18 +24,16 @@ function App() {
     <Grommet theme={theme}>
       <Router>
         <MainPage>
-        
           <Switch>
-            <Route path="/redeem">
+            <Route path="/redeem/:externalId">
               <OfferRedemption />
             </Route>
             <Route path="/">
               <OfferList />
             </Route>
           </Switch>
-          
         </MainPage>
-        </Router>
+      </Router>
     </Grommet>
   );
 }

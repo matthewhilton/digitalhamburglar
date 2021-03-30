@@ -1,11 +1,13 @@
-FROM node:12.2.0-alpine
+FROM node:alpine
+LABEL description="NodeJS Api Endpoint and Processing Server"
 
 WORKDIR /app
 
 # Install server node_modules
 COPY ./package.json .
 ENV NODE_ENV=production
-RUN npm install --production
+
+RUN npm install
 
 COPY . .
 

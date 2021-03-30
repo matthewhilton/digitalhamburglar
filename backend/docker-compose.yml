@@ -1,0 +1,42 @@
+services:
+  db:
+    container_name: postgres_db
+    build: ./postgres
+    restart: always
+    image: postgres:latest
+    env_file: 
+      - ./postgres/database.env
+    volumes:
+      - ./postgres/volume:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - network
+  
+  graphql:
+    container_name: postgraphile
+    build: ./postgraphile
+    env_file:
+      - ./postgraphile/postgraphile.env
+    ports:
+      - 5433:5433
+    depends_on:
+      - db
+    networks:
+      - network
+  
+  api_server:
+    container_name: nodejs_api
+    build: ./node_api_server
+    ports:
+      - 4000:4000
+    depends_on: 
+      - graphql
+    networks:
+      - network
+    env_file:
+      - ./node_api_server/.env
+
+networks:
+  network:
+    

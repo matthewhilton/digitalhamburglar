@@ -5,7 +5,7 @@ import OfferImage from '../components/offerImage'
 import { ApiResponse } from '../interfaces/apiInterfaces'
 
 export async function getStaticProps() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/offers/list/groups`)
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/offers/list/groups`)
   const errorCode = res.ok ? false : res.status
   const json = await res.json()
 

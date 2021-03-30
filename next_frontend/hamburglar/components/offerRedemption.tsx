@@ -27,7 +27,7 @@ const OfferRedemption = ({externalId}: {externalId: string}) => {
             loading: true
         })
 
-        fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/offers/redeem?externalId=${externalId}`)
+        fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/offers/redeem?externalId=${externalId}`)
         .then(res => res.json())
         .then(data => setOffer({
             error: null,

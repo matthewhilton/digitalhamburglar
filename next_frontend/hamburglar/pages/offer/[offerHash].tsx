@@ -15,7 +15,7 @@ export const getServerSideProps = async (context) => {
         return { props: { error: "No offerHash given", data: null } as ApiResponse } 
     }
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/offers/details?offerHash=${context.params.offerHash}`)
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/offers/details?offerHash=${context.params.offerHash}`)
     const errorCode = res.ok ? false : res.status
     const json = await res.json()
     

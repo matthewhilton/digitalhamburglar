@@ -4,7 +4,7 @@ import OfferGrid from '../components/offerGrid'
 import OfferImage from '../components/offerImage'
 import { ApiResponse } from '../interfaces/apiInterfaces'
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const res = await fetch(`${process.env.API_ENDPOINT}/offers/list/groups`)
   const errorCode = res.ok ? false : res.status
   const json = await res.json()

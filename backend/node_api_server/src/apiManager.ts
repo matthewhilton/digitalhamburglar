@@ -46,6 +46,7 @@ export default class ApiManager {
         })
     }
 
+
     createAccount(): Promise<Profile> {
         return new Promise((resolve, reject) => {
             const username: string = this.randomDisposableEmail();

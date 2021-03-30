@@ -14,7 +14,29 @@ const gqlclient = new GraphQLClient(process.env.GRAPHQL_ENDPOINT || "", { header
 const api = new ApiManager(gqlclient)
 const mcd_api = new McdApi()
 
-  
+// Start an interval to update the offers
+const updateOffers = async () => {
+  console.log("Updating offers...")
+  const accounts = await api.getAllAccounts()
+  const offerChecks: Promise<Offer[]>[] = accounts.map(account => mcd_api.get_offers(account))
+  const offerCheckResponses = await Promise.all(offerChecks)
+
+  // Destruct the outer array
+  const reducer = (accumulator, currentValue) => [...currentValue, ...accumulator];
+  const offersAcrossAllAccounts = offerCheckResponses.reduce(reducer)
+
+  // Drop all offers then Save the new offers in DB 
+  await api.delete_all_offers()
+  await api.save_offers(offersAcrossAllAccounts)
+}
+
+const updateInterval = process.env.OFFER_UPDATE_INTERVAL
+setTimeout(() => {
+  console.log("Starting offer check interval set for " + updateInterval)
+  updateOffers()
+  setInterval(updateOffers, Number(updateInterval))
+}, 5000)
+
 router.get('/list/groups', async(req, res, next) => {
   const offers = await api.get_offers_simple_list()
   
@@ -62,23 +84,6 @@ router.get('/details', async (req, res, next) => {
 
     const offersDetails = await api.get_offer_more_details(selectedOffer.externalId)
     res.json(offersDetails)
-})
-
-// TODO DEBUG get rid of in production, put on a timer and move out of router
-router.get('/update', async (req, res) => {
-    const accounts = await api.getAllAccounts()
-    const offerChecks: Promise<Offer[]>[] = accounts.map(account => mcd_api.get_offers(account))
-    const offerCheckResponses = await Promise.all(offerChecks)
-
-    // Destruct the outer array
-    const reducer = (accumulator, currentValue) => [...currentValue, ...accumulator];
-    const offersAcrossAllAccounts = offerCheckResponses.reduce(reducer)
-
-    // Drop all offers then Save the new offers in DB 
-    await api.delete_all_offers()
-    await api.save_offers(offersAcrossAllAccounts)
-
-    res.json(offersAcrossAllAccounts)
 })
 
 router.get('/redeem', async (req, res) => {

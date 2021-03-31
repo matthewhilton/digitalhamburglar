@@ -1,8 +1,9 @@
-import { Heading, Container } from '@chakra-ui/layout'
+import { Heading, Container, Center } from '@chakra-ui/layout'
 import { useRouter } from 'next/router'
 import OfferGrid from '../components/offerGrid'
 import OfferImage from '../components/offerImage'
 import { ApiResponse } from '../interfaces/apiInterfaces'
+import { GuardSpinner } from "react-spinners-kit";
 
 export async function getServerSideProps() {
   const res = await fetch(`${process.env.API_ENDPOINT}/offers/list/groups`)
@@ -15,8 +16,13 @@ export async function getServerSideProps() {
 export default function Home(props) {
 return (
     <Container maxW="container.md" centerContent={true}>
-      <Heading bgGradient="linear(to-t, #0f1,#0bffaf)" fontWeight="extrabold" bgClip="text" marginBottom={3}> Digital Hamburglar </Heading>
-      <OfferGrid offerGroups={props.data}/>
+      <Heading color="brand.50" fontWeight="extrabold" marginBottom={3} textAlign="center"> Digital Hamburglar </Heading>
+      {props.pageLoading ? 
+        <Center marginTop="20px">
+          <GuardSpinner backColor="#00ff00" frontColor="green" />
+        </Center> 
+        :  
+        <OfferGrid offerGroups={props.data}/>}
     </Container>
   )
 }

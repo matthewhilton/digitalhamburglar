@@ -4,10 +4,11 @@ import useSWR from 'swr'
 import OfferImage from '../../components/offerImage'
 import OfferRedemption from '../../components/offerRedemption'
 import { ApiResponse, OfferDetails } from '../../interfaces/apiInterfaces'
-import { Container, Heading, HStack, Text } from '@chakra-ui/layout'
+import { Container, Heading, HStack, Text, Center } from '@chakra-ui/layout'
 import { Button, Divider, Flex, Box, Spacer, CloseButton } from "@chakra-ui/react"
-import { IoChevronBackCircleSharp, IoAlertCircle } from "react-icons/io5";
+import { IoChevronBackCircleSharp, IoAlertCircle, IoFastFood } from "react-icons/io5";
 import ErrorDisplay from '../../components/errorDisplay'
+import { GuardSpinner } from "react-spinners-kit";
 
 export const getServerSideProps = async (context) => {
     if(!context.params.offerHash){
@@ -22,9 +23,17 @@ export const getServerSideProps = async (context) => {
     return { props: { error: errorCode ? json : null, data: !errorCode ? json : null } as ApiResponse } 
   }
 
-const OfferInformationPage = ({ data, error }: ApiResponse) => {
+const OfferInformationPage = ({ pageLoading, data, error}: { data: {} | null, error: {} | null, pageLoading: boolean}) => {
     const [offerRedeemOpen, setOfferRedeemOpen] = useState(false)
     const router = useRouter()
+
+    if(pageLoading){
+        return(
+            <Center marginTop="20px">
+                <GuardSpinner backColor="#00ff00" frontColor="green" />
+            </Center> 
+        )
+    }
 
     if(data && !error){
         const offer = data as OfferDetails
@@ -39,7 +48,7 @@ const OfferInformationPage = ({ data, error }: ApiResponse) => {
                         <Flex marginTop="20px" marginBottom="10px" direction="column">
                         <HStack align="center" marginBottom="10px">
                             <Button colorScheme="whiteAlpha" leftIcon={<IoChevronBackCircleSharp />} onClick={() => router.push("/")}> Back </Button>
-                            {!offerRedeemOpen && <Button isFullWidth={true} onClick={() => setOfferRedeemOpen(true)}> Get Offer Code </Button>}
+                            {!offerRedeemOpen && <Button isFullWidth={true} onClick={() => setOfferRedeemOpen(true)} colorScheme="brand"> Get Offer Code </Button>}
                         </HStack>
 
                         { offerRedeemOpen && <OfferRedemption externalId={offer.externalId as string} /> }

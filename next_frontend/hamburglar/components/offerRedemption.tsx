@@ -4,8 +4,6 @@ import { Center, VStack, Heading, Box } from "@chakra-ui/react"
 import ErrorDisplay from "./errorDisplay";
 import { CubeSpinner } from "react-spinners-kit";
 
-const fetcher = url => fetch(url).then(r => r.json())
-
 interface OfferResponse {
     error: string | null
     data: null | {

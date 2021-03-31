@@ -42,7 +42,7 @@ const OfferInformationPage = ({ pageLoading, data, error}: { data: {} | null, er
                     <Flex direction="column" justify="start" alignItems="stretch" flexGrow={1}>
                         <HStack>
                             <Text fontWeight="bold" color="white" noOfLines={5}>{offer.title}</Text>
-                            <OfferImage image={offer.image} style={{width: "150px"}}/>
+                            <OfferImage image={offer.image} style={{width: "200px"}}/>
                         </HStack>
 
                         <Flex marginTop="20px" marginBottom="10px" direction="column">

@@ -5,8 +5,11 @@ interface RestProps {
 }
 
 const OfferImage = ({image, ...restProps}: { image: string} & RestProps) => {
+    {
+        // Offer images are disable temporarily 
+    }
     return(
-        <Image src={`/placeholder.png`} {...restProps} borderRadius="5px" />
+        <Image src={"/placeholder.png"} {...restProps} borderRadius="5px"/>
     )
 }
 

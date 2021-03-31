@@ -1,6 +1,7 @@
 import OfferImage from "./offerImage"
-import { SimpleGrid, Box, Text } from "@chakra-ui/react"
+import { SimpleGrid, Container, Text, HStack } from "@chakra-ui/react"
 import NextLink from "next/link"
+import { IoPricetag } from "react-icons/io5";
 
 interface Props {
     offerGroups: Array<OfferGroup>
@@ -10,6 +11,7 @@ interface OfferGroup {
     hash: string;
     image: string;
     title: string;
+    count: number;
 }
 
 const OfferGrid = ({offerGroups, ...props}: Props) => { 
@@ -28,10 +30,14 @@ const OfferGrid = ({offerGroups, ...props}: Props) => {
 
 const OfferGridCard = ({offerGroup}: { offerGroup: OfferGroup}) => (
     <NextLink href="/offer/[offerHash]" as={'/offer/' + encodeURIComponent(offerGroup.hash)}>
-        <Box bg="gray.900" p={3} borderRadius="lg" maxWidth={600}>
-            <OfferImage image={offerGroup.image} style={{width: "200px"}} />
+        <Container bg="gray.900" p={3} borderRadius="lg" maxW="container.md" centerContent>
+            <OfferImage image={offerGroup.image} style={{width: "300px"}} />
             <Text color="gray.100" fontWeight="bold" noOfLines={4} p={1}>{offerGroup.title}</Text>
-        </Box>
+            <HStack justify="start" direction="row" align="center" width="100%">
+                <IoPricetag color="green" />
+                <Text color="green" fontWeight="semibold">{offerGroup.count} code{offerGroup.count > 1 ? 's' : null}</Text>
+            </HStack>
+        </Container>
     </NextLink>
 )
 

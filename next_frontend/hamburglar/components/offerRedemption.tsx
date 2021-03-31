@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import bwipjs from "bwip-js"
-import { Center, VStack, Heading, Box } from "@chakra-ui/react"
+import { Center, VStack, Heading, Box, Text } from "@chakra-ui/react"
 import ErrorDisplay from "./errorDisplay";
 import { CubeSpinner } from "react-spinners-kit";
 
@@ -18,7 +18,6 @@ const OfferRedemption = ({externalId}: {externalId: string}) => {
     const [offer, setOffer] = useState<OfferResponse | null>({ error: null, data: null, loading: false})
 
     useEffect(() => {
-
         setOffer({
             error: null,
             data: null,

@@ -45,6 +45,7 @@ router.get('/list/groups', async(req, res, next) => {
   const offerHashGroups = Object.keys(offersGroupedByTitle).map(offerTitle => ({
     title: offerTitle,
     image: offersGroupedByTitle[offerTitle][0].image,
+    count: offersGroupedByTitle[offerTitle].length,
     hash: sha256(offerTitle).toString()
   }))
 

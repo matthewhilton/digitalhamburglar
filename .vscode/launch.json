@@ -7,6 +7,13 @@
         "name": "Attach",
         "restart": true,
         "processId": "${command:PickProcess}"
+      },
+      {
+        "name": "Attach to Python Functions",
+        "type": "python",
+        "request": "attach",
+        "port": 9091,
+        "preLaunchTask": "func: host start"
       }
     ]
   }

@@ -4,3 +4,4 @@ node_modules
 dev
 backend/nginx/ssl/RootCA.key
 backend/nginx/ssl/RootCA.crt
+.venv

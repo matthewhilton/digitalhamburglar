@@ -21,7 +21,7 @@ const OfferImage = ({image, ...restProps}: { image: string} & RestProps) => {
     return(
         <Img 
         src={[offerPaths.cdn, offerPaths.func]} 
-        loader={<Container width="200px" height="200px"><FlagSpinner color="green" /></Container>}
+        loader={<Container><FlagSpinner color="green" /></Container>}
         unloader={<ImageError />}
         />
     )

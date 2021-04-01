@@ -15,6 +15,7 @@
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
     "bwip-js": "^2.1.1",
+    "crypto-js": "^4.0.0",
     "emotion-theming": "^11.0.0",
     "framer-motion": "^4",
     "next": "10.0.9",

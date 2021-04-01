@@ -37,13 +37,14 @@ const OfferInformationPage = ({ pageLoading, data, error}: { data: {} | null, er
 
     if(data && !error){
         const offer = data as OfferDetails
+
         return(
                 <Container maxW="container.md" centerContent={true} height="90vh">
                     <Flex direction="column" justify="start" alignItems="stretch" flexGrow={1}>
                         <HStack>
                             <Text fontWeight="bold" color="white" noOfLines={5}>{offer.title}</Text>
                             <Box maxWidth="250px" minWidth="150px">
-                                <OfferImage image={process.env.NEXT_PUBLIC_OFFER_IMAGE_FUNC_ENDPOINT + "&image=" + offer.image} />
+                                <OfferImage image={offer.image} />
                             </Box>
                         </HStack>
 

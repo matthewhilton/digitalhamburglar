@@ -1,6 +1,7 @@
 import { Text, Box, Container} from '@chakra-ui/react'
 import { Img } from 'react-image'
 import { FlagSpinner } from 'react-spinners-kit'
+import { getOfferImagesPath } from '../functions/getOfferImagePath'
 
 interface RestProps {
     style?
@@ -13,9 +14,13 @@ const ImageError = () => (
 )
 
 const OfferImage = ({image, ...restProps}: { image: string} & RestProps) => {
+    const offerPaths = getOfferImagesPath(image)
+
+    // Initially use cdn path (to avoid unneccessary function invocations)
+    // but fallback to function path if that doesn't work (for example if it doesn't exist)
     return(
         <Img 
-        src={image} 
+        src={[offerPaths.cdn, offerPaths.func]} 
         loader={<Container width="200px" height="200px"><FlagSpinner color="green" /></Container>}
         unloader={<ImageError />}
         />

@@ -175,9 +175,16 @@ export default class McdApi {
     get_offer_redemption_code(mcd_offerId: number, mcd_propId: number, account: Profile): Promise<OfferCode> {
         return new Promise<OfferCode>((resolve, reject) => {
             this.login(account).then((token) => {
+                let url = 'https://ap-prod.api.mcd.com/exp/v1/offers/redemption/' + String(mcd_propId)
+
+                // Sometimes an offerID is zero, if this is the case do not append it to the end or else it causes errors 
+                if(mcd_offerId != 0){
+                    url = url + "?offerId=" + String(mcd_offerId)
+                }
+
                 var config : AxiosRequestConfig = {
                     method: 'get',
-                    url: 'https://ap-prod.api.mcd.com/exp/v1/offers/redemption/' + String(mcd_propId)+ "?offerId=" + String(mcd_offerId),
+                    url,
                     headers: { 
                             'Authorization': 'Bearer ' + token,
                             'mcd-clientid': this.clientId,

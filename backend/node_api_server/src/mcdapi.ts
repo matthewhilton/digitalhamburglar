@@ -72,8 +72,8 @@ export default class McdApi {
                 wretch()
                 .middlewares([
                     retry({
-                        maxAttempts: 3,
-                        delayTimer: 500,
+                        maxAttempts: 2,
+                        delayTimer: 1000,
                     })
                 ])
                 .url("https://ap-prod.api.mcd.com/exp/v1/customer/registration")
@@ -116,8 +116,8 @@ export default class McdApi {
                 wretch()
                 .middlewares([
                     retry({
-                        maxAttempts: 3,
-                        delayTimer: 150
+                        maxAttempts: 2,
+                        delayTimer: 1000
                     })
                 ])
                 .url("https://ap-prod.api.mcd.com/exp/v1/customer/login")
@@ -162,12 +162,12 @@ export default class McdApi {
                     delay(delayMilliseconds),
                     retry({
                         onRetry: ({url, options, error, response}) => { 
-                            console.log("Error when getting offers"); 
+                            console.log("Error when getting offers - retrying"); 
                             console.log(response)
                             console.log(error)
                             return {url, options}},
                         delayTimer: 5000,
-                        maxAttempts: 2,
+                        maxAttempts: 1,
                         retryOnNetworkError: true
                     })
                 ])

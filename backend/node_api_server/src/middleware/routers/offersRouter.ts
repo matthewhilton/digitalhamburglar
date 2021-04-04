@@ -3,7 +3,7 @@ import ApiManager from "../../apiManager";
 import McdApi from "../../mcdapi";
 import sha256 from 'crypto-js/sha256';
 import { Offer } from "src/interfaces";
-import { groupBy, sample } from "lodash"
+import { groupBy, sample, compact } from "lodash"
 
 require('dotenv').config()
 
@@ -19,12 +19,24 @@ const updateOffers = async () => {
   console.log("Updating offers...")
   try {
     const accounts = await api.getAllAccounts()
-    const offerChecks: Promise<Offer[]>[] = accounts.map(account => mcd_api.get_offers(account))
-    const offerCheckResponses = await Promise.all(offerChecks)
-  
+
+    // Create array of promises that resolve to get the offers, but delay them all to avoid rate limiting
+    const offerChecks: Promise<Offer[]>[] = accounts.map((account, i) => mcd_api.get_offers(account, i*4000))
+
+    // Because Promise.All will reject when ANY one promise fails, catch any errors and just return undefined
+    const offerChecksWithPromiseHandlers = offerChecks.map(p => p.catch((e) => {
+      console.log(e)
+      return undefined
+    }))
+    const offerCheckResponses = await Promise.all(offerChecksWithPromiseHandlers)
+
+    // Remove any that were undefined (failed promises)
+    const offerResponses: Array<Offer[]> = compact(offerCheckResponses)
+    console.log(`Offer checking: ${offerResponses.length} / ${offerCheckResponses.length} saved`)
+   
     // Destruct the outer array
     const reducer = (accumulator, currentValue) => [...currentValue, ...accumulator];
-    const offersAcrossAllAccounts = offerCheckResponses.reduce(reducer)
+    const offersAcrossAllAccounts = offerResponses.reduce(reducer, [])
   
     // Drop all offers then Save the new offers in DB 
     await api.delete_all_offers()
@@ -34,13 +46,6 @@ const updateOffers = async () => {
     console.log(err)
   }
 }
-
-const updateInterval = process.env.OFFER_UPDATE_INTERVAL
-setTimeout(() => {
-  console.log("Starting offer check interval set for " + updateInterval)
-  updateOffers()
-  setInterval(updateOffers, Number(updateInterval))
-}, 5000)
 
 router.get('/list/groups', async(req, res, next) => {
   try {
@@ -120,5 +125,23 @@ router.get('/redeem', async (req, res) => {
     res.status(500).json("Unknown error ocurred")
   }
 })
+
+// Start auto offer updating but only if in production
+const updateInterval = process.env.OFFER_UPDATE_INTERVAL
+if(process.env.NODE_ENV === 'production'){
+  setTimeout(() => {
+    console.log("Starting offer check interval set for " + updateInterval)
+    updateOffers()
+    setInterval(updateOffers, Number(updateInterval))
+  }, 5000)
+} else {
+  // Else open up an endpoint to run the offer update check instead
+  router.get('/update', (req, res) => {
+    updateOffers()
+    res.json("Success")
+  })
+}
+
+
 
 module.exports = router;

@@ -46,14 +46,12 @@ export default class ApiManager {
         })
     }
 
-
     createAccount(): Promise<Profile> {
         return new Promise((resolve, reject) => {
             const username: string = this.randomDisposableEmail();
             const password: string = this.randomCompliantPassword();
             const name = this.randomNameGenerator();
             const postcode = this.getRandomPostcode();
-            // TODO ensure email not in use 
 
             new McdApi().register_account(username, password, name[0], name[1], postcode).then((response) => {
                 // Success registering with remote Api

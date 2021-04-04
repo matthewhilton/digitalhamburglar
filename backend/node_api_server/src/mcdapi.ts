@@ -5,6 +5,7 @@ import { Offer, OfferCode, Profile } from "./interfaces"
 import ApiManager from './apiManager';
 import wretch from "wretch"
 import { retry, delay } from 'wretch-middlewares'
+import { ConsoleMessage } from 'puppeteer';
 
 export default class McdApi {
     clientSecret: string;
@@ -114,12 +115,6 @@ export default class McdApi {
         return new Promise((resolve, reject) => {
             this.get_bearer_unauth().then(unauth_token => {
                 wretch()
-                .middlewares([
-                    retry({
-                        maxAttempts: 2,
-                        delayTimer: 1000
-                    })
-                ])
                 .url("https://ap-prod.api.mcd.com/exp/v1/customer/login")
                 .headers({
                     'authorization': 'Bearer ' + unauth_token,
@@ -155,52 +150,43 @@ export default class McdApi {
 
     get_offers(profile: Profile, delayMilliseconds=0): Promise<Array<Offer>> {
         return new Promise((resolve, reject) => {
-            this.login(profile).then((token) => {
-                // get offers from this account
-                wretch()
-                .middlewares([
-                    delay(delayMilliseconds),
-                    retry({
-                        onRetry: ({url, options, error, response}) => { 
-                            console.log("Error when getting offers - retrying"); 
-                            console.log(response)
-                            console.log(error)
-                            return {url, options}},
-                        delayTimer: 5000,
-                        maxAttempts: 1,
-                        retryOnNetworkError: true
+            console.log(`Get offers promise created, running in ${delayMilliseconds} ms`)
+            setTimeout(() => {
+                this.login(profile).then((token) => {
+                    // get offers from this account
+                    console.log(`Getting offers for account ID ${profile.id}`)
+                    wretch()
+                    .url("https://ap-prod.api.mcd.com/exp/v1/offers")
+                    .headers({
+                        'authorization': 'Bearer ' + token,
+                        'mcd-clientid': this.clientId,
+                        'accept-language': "en-AU",
+                        'user-agent': 'MCDSDK/8.0.15 (iPhone; 14.3; en-AU) GMA/6.2'
                     })
-                ])
-                .url("https://ap-prod.api.mcd.com/exp/v1/offers")
-                .headers({
-                    'authorization': 'Bearer ' + token,
-                    'mcd-clientid': this.clientId,
-                    'accept-language': "en-AU",
-                    'user-agent': 'MCDSDK/8.0.15 (iPhone; 14.3; en-AU) GMA/6.2'
-                })
-                .get()
-                .json(json => {
-                    // Fit them into the Offer interface
-                    const offersRecieved = json.response.offers.map(offer => {
-                        const recievedOffer: Offer = {
-                            id: null,
-                            mcd_offerId: offer.offerId,
-                            mcd_propositionId: offer.offerPropositionId,
-                            title: offer.name,
-                            longDescription: offer.longDescription,
-                            offerBucket: offer.offerBucket,
-                            validToUTC: offer.validToUTC,
-                            profile: profile,
-                            externalId: null,
-                            image: offer.imageBaseName
-                        }
-                        return recievedOffer
+                    .get()
+                    .json(json => {
+                        // Fit them into the Offer interface
+                        const offersRecieved = json.response.offers.map(offer => {
+                            const recievedOffer: Offer = {
+                                id: null,
+                                mcd_offerId: offer.offerId,
+                                mcd_propositionId: offer.offerPropositionId,
+                                title: offer.name,
+                                longDescription: offer.longDescription,
+                                offerBucket: offer.offerBucket,
+                                validToUTC: offer.validToUTC,
+                                profile: profile,
+                                externalId: null,
+                                image: offer.imageBaseName
+                            }
+                            return recievedOffer
+                        })
+                        console.log(`Offer get success for account ID ${profile.id}, got ${offersRecieved.length} offers`)
+                        resolve(offersRecieved)
                     })
-
-                    resolve(offersRecieved)
-                })
-                .catch(err => reject(err))
-            }).catch(err => reject(err))
+                    .catch(err => reject(err))
+                }).catch(err => reject(err))
+            }, delayMilliseconds)
         })
     }
 

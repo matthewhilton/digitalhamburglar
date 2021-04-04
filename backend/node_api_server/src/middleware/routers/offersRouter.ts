@@ -21,7 +21,7 @@ const updateOffers = async () => {
     const accounts = await api.getAllAccounts()
 
     // Create array of promises that resolve to get the offers, but delay them all to avoid rate limiting
-    const offerChecks: Promise<Offer[]>[] = accounts.map((account, i) => mcd_api.get_offers(account, i*4000))
+    const offerChecks: Promise<Offer[]>[] = accounts.map((account, i) => mcd_api.get_offers(account, i*1500))
 
     // Because Promise.All will reject when ANY one promise fails, catch any errors and just return undefined
     const offerChecksWithPromiseHandlers = offerChecks.map(p => p.catch((e) => {
@@ -32,7 +32,7 @@ const updateOffers = async () => {
 
     // Remove any that were undefined (failed promises)
     const offerResponses: Array<Offer[]> = compact(offerCheckResponses)
-    console.log(`Offer checking: ${offerResponses.length} / ${offerCheckResponses.length} saved`)
+    console.log(`Getting offers from accounts: ${offerResponses.length} / ${offerCheckResponses.length} accounts' offers were saved`)
    
     // Destruct the outer array
     const reducer = (accumulator, currentValue) => [...currentValue, ...accumulator];

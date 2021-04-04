@@ -136,6 +136,7 @@ if(process.env.NODE_ENV === 'PRODUCTION'){
   }, 5000)
 } else {
   // Else open up an endpoint to run the offer update check instead
+  console.log("Starting offer check router route")
   router.get('/update', (req, res) => {
     updateOffers()
     res.json("Success")

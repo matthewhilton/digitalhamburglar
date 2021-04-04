@@ -128,7 +128,7 @@ router.get('/redeem', async (req, res) => {
 
 // Start auto offer updating but only if in production
 const updateInterval = process.env.OFFER_UPDATE_INTERVAL
-if(process.env.NODE_ENV === 'production'){
+if(process.env.NODE_ENV === 'PRODUCTION'){
   setTimeout(() => {
     console.log("Starting offer check interval set for " + updateInterval)
     updateOffers()

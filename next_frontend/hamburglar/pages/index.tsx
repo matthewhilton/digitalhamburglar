@@ -4,25 +4,36 @@ import OfferGrid from '../components/offerGrid'
 import OfferImage from '../components/offerImage'
 import { ApiResponse } from '../interfaces/apiInterfaces'
 import { GuardSpinner } from "react-spinners-kit";
+import ErrorDisplay from '../components/errorDisplay'
 
 export async function getServerSideProps() {
-  const res = await fetch(`${process.env.API_ENDPOINT}/offers/list/groups`)
-  const errorCode = res.ok ? false : res.status
-  const json = await res.json()
-
-  return { props: { error: errorCode ? json : null, data: !errorCode ? json : null } as ApiResponse } 
+  try {
+    const res = await fetch(`${process.env.API_ENDPOINT}/offers/list/groups`)
+    const errorCode = res.ok ? false : res.status
+    const json = await res.json()
+  
+    return { props: { error: errorCode ? json : null, data: !errorCode ? json : null } as ApiResponse } 
+  } catch(err) {
+    console.error("Could not get server side props")
+    console.error(err)
+    return { props: { error: "Could not get offers", data: null } as ApiResponse}
+  }
 }
 
 export default function Home(props) {
+  console.log(props)
 return (
     <Container maxW="container.md" centerContent={true}>
       <Heading color="brand.50" fontWeight="extrabold" marginBottom={3} textAlign="center"> Digital Hamburglar </Heading>
-      {props.pageLoading ? 
-        <Center marginTop="20px">
-          <GuardSpinner backColor="#00ff00" frontColor="green" />
-        </Center> 
-        :  
-        <OfferGrid offerGroups={props.data}/>}
+      {props.error ? <ErrorDisplay error={JSON.stringify(props.error)} showButton={false}/> : <>
+        {props.pageLoading ? 
+          <Center marginTop="20px">
+            <GuardSpinner backColor="#00ff00" frontColor="green" />
+          </Center> 
+          :  
+          <OfferGrid offerGroups={props.data}/>}
+      </>}
+      
     </Container>
   )
 }

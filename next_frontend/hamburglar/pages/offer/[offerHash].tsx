@@ -11,16 +11,22 @@ import ErrorDisplay from '../../components/errorDisplay'
 import { GuardSpinner } from "react-spinners-kit";
 
 export const getServerSideProps = async (context) => {
-    if(!context.params.offerHash){
-        // No externalID given, return error
-        return { props: { error: "No offerHash given", data: null } as ApiResponse } 
-    }
-
-    const res = await fetch(`${process.env.API_ENDPOINT}/offers/details?offerHash=${context.params.offerHash}`)
-    const errorCode = res.ok ? false : res.status
-    const json = await res.json()
+    try {
+        if(!context.params.offerHash){
+            // No externalID given, return error
+            return { props: { error: "No offerHash given", data: null } as ApiResponse } 
+        }
     
-    return { props: { error: errorCode ? json : null, data: !errorCode ? json : null } as ApiResponse } 
+        const res = await fetch(`${process.env.API_ENDPOINT}/offers/details?offerHash=${context.params.offerHash}`)
+        const errorCode = res.ok ? false : res.status
+        const json = await res.json()
+        
+        return { props: { error: errorCode ? json : null, data: !errorCode ? json : null } as ApiResponse } 
+    } catch(err) {
+        console.error("Could not get server side props")
+        console.error(err)
+        return { props: { error: "Could not get offer", data: null } as ApiResponse}
+    }
   }
 
 const OfferInformationPage = ({ pageLoading, data, error}: { data: {} | null, error: {} | null, pageLoading: boolean}) => {

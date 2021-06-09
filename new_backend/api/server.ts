@@ -1,37 +1,34 @@
 import Koa from 'koa';
+import Router from "@koa/router";
 import dotenv from 'dotenv';
-import { login, refreshToken } from "./mcdapi"
 import { Profile } from './interfaces'
-import jwt_decode from "jwt-decode";
+import { get_token_for_account, reset_account_token } from './loginmanager';
 
 // Load Server
 const app = new Koa();
+const router = new Router();
 
 // Load environment variables.
 dotenv.config()
 
-import getDatabase from "./db";
-const db_conn = getDatabase();
+const testProfile:Profile = {
+  username: '12345678a@sharklasers.com',
+  password: 'pizzaTime1',
+  created: new Date(),
+  id: 0
+}
 
-app.use(async ctx => {
-  const testProfile:Profile = {
-    username: '12345678a@sharklasers.com',
-    password: 'pizzaTime1',
-    created: new Date(),
-    id: 0
-  }
-  const token = await login(testProfile)
-  
-  console.log("logged in with token")
-  console.log(token)
-
-  const refreshedToken = await refreshToken(token)
-
-  console.log("New token")
-  console.log(refreshedToken)
-
-  ctx.body = refreshedToken
+router.get('/', async (ctx) => {
+  ctx.body = await get_token_for_account(testProfile)
 })
+
+router.get('/reset', async (ctx) => {
+  ctx.body = await reset_account_token(testProfile)
+})
+
+app
+  .use(router.routes())
+  .use(router.allowedMethods());
 
 
 app.listen(3000);

@@ -18,7 +18,7 @@ export interface Profile {
     username: string,
     password: string,
     created: Date,
-    id: number
+    id: number | null
 }
 
 export interface Device {

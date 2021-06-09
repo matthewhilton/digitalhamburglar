@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model accounts {
+  id               Int       @id @default(autoincrement())
+  username         String   @db.VarChar(255) @unique()
+  password         String   @db.VarChar(255)
+  accesstoken      String   @db.Text()
+  refreshtoken     String   @db.VarChar(255)
+  tokenlastchecked DateTime  @db.Timestamptz(6)
+}
+
+model offers {
+  id            Int       @id @default(autoincrement())
+  offerid       Int
+  propositionid Int
+  title         String   @db.VarChar(255)
+  description   String   @db.VarChar(255)
+  image         String  @db.VarChar(255)
+  offerbucket   String   @db.VarChar(255)
+  accountid     Int
+  tokenlastchecked  DateTime  @db.Timestamptz(6)
+}
+
+model users {
+  id       Int     @id @default(autoincrement())
+  name     String @db.VarChar(255)
+  password String @db.VarChar(255)
+}

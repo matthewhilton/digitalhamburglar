@@ -2,7 +2,8 @@ import { v4 as uuidv4 } from 'uuid';
 import crypto from "crypto";
 import wretch from "wretch"
 import { retry, delay } from 'wretch-middlewares'
-import { Profile, Token } from 'interfaces';
+import { Profile, Token, Offer } from 'interfaces';
+import { get_profile_db } from './loginmanager';
 
 // Fixed credentials...
 const clientSecret = "anr4rTy2VRaCfcr9wZE6kVKjSswTv2Rc"
@@ -129,5 +130,68 @@ export const refreshToken = (token: Token, mcdUUID = getRandomMcdUUID()): Promis
                 reject(json.status)
             })
             .catch(err => reject(err))
+    })
+}
+
+export const getAccountOffers = (token: Token): Promise<[Offer]> => {
+    return new Promise(async (resolve, reject) => {
+        const accountForToken = await get_profile_db(token);
+        
+        wretch()
+        .url("https://ap-prod.api.mcd.com/exp/v1/offers")
+        .headers({
+            'authorization': 'Bearer ' + token.accessToken,
+            'mcd-clientid': clientId,
+            'accept-language': "en-AU",
+            'user-agent': 'MCDSDK/8.0.15 (iPhone; 14.3; en-AU) GMA/6.2'
+        })
+        .get()
+        .json(json => {
+            // Restructure them into the Offer interfacejson.response.offers.map(offer => {
+            const offersReceived = json.response.offers.map(offer => {
+                const receivedOffer: Offer = {
+                    id: null,
+                    offerid: offer.offerId,
+                    propositionid: offer.offerPropositionId,
+                    title: offer.name,
+                    longDescription: offer.longDescription,
+                    offerBucket: offer.offerBucket,
+                    validto: new Date(offer.validToUTC),
+                    image: offer.imageBaseName,
+                    profile: accountForToken
+                }
+                return receivedOffer
+            })
+
+            resolve(offersReceived)
+        })
+        .catch(err => reject(err))
+    })
+}
+
+export const testToken = (token: Token, mcdUUID=getRandomMcdUUID()): Promise<Boolean> => {
+    return new Promise<Boolean>((resolve, reject) => {
+        // Tests a given token for expiry by accessing the profile endpoint
+        wretch()
+        .url("https://ap-prod.api.mcd.com/exp/v1/customer/profile")
+        .headers({
+            'authorization': 'Bearer ' + token.accessToken,
+            'mcd-clientid': clientId,
+            'mcd-clientsecret': clientSecret,
+            'accept-language': "en-AU",
+            'user-agent': 'MCDSDK/8.0.15 (iPhone; 14.3; en-AU) GMA/6.2',
+            'mcd-uuid': mcdUUID,
+            'mcd-sourceapp': 'GMA',
+        })
+        .get()
+        .json(json => {
+            if(json.status.code === 20000) resolve(true);
+            resolve(false)
+        })
+        .catch(err => {
+            console.log('Token validation failed')
+            console.log(err)
+            resolve(false)
+        })
     })
 }

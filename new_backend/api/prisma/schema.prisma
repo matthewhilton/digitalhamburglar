@@ -13,7 +13,8 @@ model accounts {
   password         String   @db.VarChar(255)
   accesstoken      String   @db.Text()
   refreshtoken     String   @db.VarChar(255)
-  tokenlastchecked DateTime  @db.Timestamptz(6)
+  tokenlastrefreshed DateTime  @db.Timestamptz(6)
+  state Int
 }
 
 model offers {
@@ -25,7 +26,7 @@ model offers {
   image         String  @db.VarChar(255)
   offerbucket   String   @db.VarChar(255)
   accountid     Int
-  tokenlastchecked  DateTime  @db.Timestamptz(6)
+  validto  DateTime  @db.Timestamptz(6)
 }
 
 model users {

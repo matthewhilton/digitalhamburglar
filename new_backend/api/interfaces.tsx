@@ -1,11 +1,14 @@
 
 export interface Offer {
     id: number | null,
-    mcd_offerId: number,
-    mcd_propositionId: number,
+    offerid: number,
+    propositionid: number,
+    title: string,
+    offerBucket: string,
+    image: string,
     longDescription: string, 
-    validToUTC: string,
-    profile: Profile,
+    validto: Date,
+    profile: Profile
 }
 
 export interface OfferCode {
@@ -17,8 +20,10 @@ export interface OfferCode {
 export interface Profile {
     username: string,
     password: string,
-    created: Date,
-    id: number | null
+    accesstoken?: string,
+    refreshtoken?: string,
+    id?: number
+    state: number,
 }
 
 export interface Device {

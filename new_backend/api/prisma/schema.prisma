@@ -21,12 +21,13 @@ model offers {
   id            Int       @id @default(autoincrement())
   offerid       Int
   propositionid Int
-  title         String   @db.VarChar(255)
-  description   String   @db.VarChar(255)
-  image         String  @db.VarChar(255)
-  offerbucket   String   @db.VarChar(255)
+  title         String   @db.Text()
+  description   String   @db.Text()
+  image         String    @db.Text()
+  offerbucket   String   @db.Text()
   accountid     Int
   validto  DateTime  @db.Timestamptz(6)
+  state Int
 }
 
 model users {

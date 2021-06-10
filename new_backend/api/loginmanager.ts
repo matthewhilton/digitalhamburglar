@@ -2,15 +2,17 @@ import { Profile, Token } from "./interfaces";
 import { PrismaClient } from '@prisma/client'
 import { login, refreshToken, testToken } from "./mcdapi";
 import { sampleSize, difference } from "lodash";
+import { Console } from "console";
 const prisma = new PrismaClient();
 
-enum AccountState {
+export enum AccountState {
     ManualInactive = 0,
     Active = 1,
     OutOfRotation = 2
 }
 
 export const get_token_for_account = async (profile: Profile): Promise<Token> => {
+    console.log(`Getting token for account ${profile.username || profile.id}`)
     // Lookup by username as username is unique
     const user = await prisma.accounts.findFirst({
         where: {
@@ -117,6 +119,7 @@ export const get_profile_db = async (token: Token): Promise<Profile> => {
 // Gets all the accounts, and allocates a certain percentage as active
 // So that not every account is used every day, so it appears less bot-like
 export const reallocate_active_accounts = async (percentageActive: number): Promise<void> => {
+    console.log("Reallocating accounts...");
     if(percentageActive <= 0 || percentageActive > 1){
         throw new Error("Invalid percentage active");
     }

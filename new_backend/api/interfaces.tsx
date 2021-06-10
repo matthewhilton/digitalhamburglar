@@ -8,13 +8,14 @@ export interface Offer {
     image: string,
     longDescription: string, 
     validto: Date,
-    profile: Profile
+    profile: Profile | null,
+    state: number
 }
 
 export interface OfferCode {
     code: string,
     barcodeData: string,
-    expirationTime: string,
+    expirationTime: Date,
 }
 
 export interface Profile {
@@ -38,4 +39,12 @@ export interface Device {
 export interface Token {
     accessToken: string,
     refreshToken: string,
+}
+
+export interface ApiOffer {
+    title: string,
+    longDescription: string,
+    image: string,
+    validto: Date,
+    offertoken: string,
 }

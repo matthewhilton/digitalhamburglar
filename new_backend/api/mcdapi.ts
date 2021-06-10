@@ -2,8 +2,9 @@ import { v4 as uuidv4 } from 'uuid';
 import crypto from "crypto";
 import wretch from "wretch"
 import { retry, delay } from 'wretch-middlewares'
-import { Profile, Token, Offer } from 'interfaces';
+import { Profile, Token, Offer, OfferCode } from 'interfaces';
 import { get_profile_db } from './loginmanager';
+import { OfferState } from './offersmanager';
 
 // Fixed credentials...
 const clientSecret = "anr4rTy2VRaCfcr9wZE6kVKjSswTv2Rc"
@@ -133,7 +134,7 @@ export const refreshToken = (token: Token, mcdUUID = getRandomMcdUUID()): Promis
     })
 }
 
-export const getAccountOffers = (token: Token): Promise<[Offer]> => {
+export const getAccountOffers = (token: Token): Promise<Offer[]> => {
     return new Promise(async (resolve, reject) => {
         const accountForToken = await get_profile_db(token);
         
@@ -158,7 +159,8 @@ export const getAccountOffers = (token: Token): Promise<[Offer]> => {
                     offerBucket: offer.offerBucket,
                     validto: new Date(offer.validToUTC),
                     image: offer.imageBaseName,
-                    profile: accountForToken
+                    profile: accountForToken,
+                    state: OfferState.available,
                 }
                 return receivedOffer
             })
@@ -194,4 +196,33 @@ export const testToken = (token: Token, mcdUUID=getRandomMcdUUID()): Promise<Boo
             resolve(false)
         })
     })
+}
+
+export const redeemOffer = (mcd_offerId: number, mcd_propId: number, accountToken: Token): Promise<OfferCode> => {
+    return new Promise<OfferCode>((resolve, reject) => {
+        let url = 'https://ap-prod.api.mcd.com/exp/v1/offers/redemption/' + String(mcd_propId)
+
+        // Sometimes an offerID is zero, if this is the case do not append it to the end or else it causes errors 
+        if(mcd_offerId != 0){
+            url = url + "?offerId=" + String(mcd_offerId)
+        }
+
+        wretch(url)
+        .headers({ 
+            'Authorization': 'Bearer ' + accountToken.accessToken,
+            'mcd-clientid': clientId,
+            'Accept-Language': 'en-AU', 
+            'user-agent': 'MCDSDK/8.0.15 (iPhone; 14.3; en-AU) GMA/6.2'
+        })
+        .get()
+        .json(json => {
+            const offerCodeData: OfferCode = {
+                code: json.response.randomCode,
+                barcodeData: json.response.barCodeContent,
+                expirationTime: json.response.expirationTime
+            }
+            resolve(offerCodeData);
+        })
+        .catch(err => reject(err))
+})
 }

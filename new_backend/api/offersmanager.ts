@@ -5,6 +5,8 @@ import { PrismaClient } from '@prisma/client'
 import { flatten, differenceWith, map } from "lodash";
 import crypto from 'crypto';
 import dotenv from 'dotenv';
+import { resolve } from "path/posix";
+import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
 
@@ -237,20 +239,52 @@ export const convert_offer_for_api = async (offer: Offer): Promise<ApiOffer> => 
     } as ApiOffer;
 }
 
-export const redeem_offer = async (offerToken: string): Promise<OfferCode> => {
-    const offerTokenDecrypted = await decryptToken(offerToken)
-    const offerId = Number(offerTokenDecrypted.split('|')[0])
-    const offer = await get_offer_by_id(offerId)
-
+export const get_offer_code = async (offer: Offer): Promise<OfferCode> => {
     if(offer.profile === null) throw new Error("Could not get account for offer")
 
     const accountToken = await get_token_for_account(offer.profile)
 
     // Get offer code
     const offerCode = await redeemOffer(offer.offerid, offer.propositionid, accountToken)
-    
-    // Mark offer as temporarily redeemed
-    await temp_redeem_offer(offer, Number(process.env.OFFER_TEMP_REDEMPTION_TIME) || 30)
 
     return offerCode;
+}
+
+export const offer_available = async (offerToken: string): Promise<boolean> => {
+    const offerTokenDecrypted = await decryptToken(offerToken)
+    const offerId = Number(offerTokenDecrypted.split('|')[0])
+    const offer = await get_offer_by_id(offerId)
+
+    if(offer.state === OfferState.available) return true;
+    return false;
+}
+
+export interface JWTPayload {
+    data: string,
+    iat: number,
+    exp: number,
+}
+
+export const get_offer_redemption_key = async (offerToken: string): Promise<string> => {
+    const jsonsecret = process.env.SECRET_KEY
+    if(jsonsecret === undefined) throw new Error("SECRET_KEY not defined in .env")
+
+    const offerRedemptionSeconds = Number(process.env.OFFER_TEMP_REDEMPTION_TIME)
+    if(offerRedemptionSeconds === undefined) throw new Error("OFFER_TEMP_REDEMPTION_TIME not defined in .env")
+
+    const token = jwt.sign({data: String(offerToken)}, jsonsecret, { expiresIn: offerRedemptionSeconds });
+
+    return token;
+}
+
+export const verify_redemption_key = async (key: string): Promise<boolean | JWTPayload> => {
+    const jsonsecret = process.env.SECRET_KEY
+    if(jsonsecret === undefined) throw new Error("SECRET_KEY not defined in .env")
+
+    try {
+        const payload = jwt.verify(key, jsonsecret) as JWTPayload
+        return payload;
+    } catch (e){
+        return false;
+    }
 }

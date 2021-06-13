@@ -5,14 +5,17 @@ import OfferImage from '../components/offerImage'
 import { ApiResponse } from '../interfaces/apiInterfaces'
 import { GuardSpinner } from "react-spinners-kit";
 import ErrorDisplay from '../components/errorDisplay'
+import { groupBy } from "lodash"
 
 export async function getServerSideProps() {
   try {
-    const res = await fetch(`${process.env.API_ENDPOINT}/offers/list/groups`)
+    const res = await fetch(`${process.env.API_ENDPOINT}/offers`)
     const errorCode = res.ok ? false : res.status
     const json = await res.json()
+
+    const groupedOffers = groupBy(json, 'title')
   
-    return { props: { error: errorCode ? json : null, data: !errorCode ? json : null } as ApiResponse } 
+    return { props: { error: errorCode ? json : null, data: !errorCode ? groupedOffers : null } as ApiResponse } 
   } catch(err) {
     console.error("Could not get server side props")
     console.error(err)
@@ -21,7 +24,7 @@ export async function getServerSideProps() {
 }
 
 export default function Home(props) {
-  console.log(props)
+  console.log(props.data)
 return (
     <Container maxW="container.md" centerContent={true}>
       <Heading color="brand.50" fontWeight="extrabold" marginBottom={3} textAlign="center"> Digital Hamburglar </Heading>

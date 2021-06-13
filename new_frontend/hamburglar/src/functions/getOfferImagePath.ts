@@ -7,7 +7,7 @@ interface Paths {
 
 export const getOfferImagesPath = (offerImage: string): Paths => {
     const func_basepath = process.env.REACT_APP_OFFER_IMAGE_FUNC_ENDPOINT;
-    const cdn_basepath = process.env.NEXT_PUBLIC_OFFER_IMAGE_CDN_ENDPOINT;
+    const cdn_basepath = process.env.REACT_APP_OFFER_IMAGE_CDN_ENDPOINT;
 
     if(func_basepath === undefined || cdn_basepath === undefined) throw new Error("Function or CDN Image basepath was not defined in the .env")
 

@@ -16,13 +16,6 @@ const redemptionKeyReducer = (state: StoreState = { key: defaultKey }, action: A
             key: action.data
         }
     }
-    
-    if(action.type === 'delete'){
-        return {
-            ...state,
-            key: null
-        };
-    }
 
     if(action.type === 'expire'){
         return {

@@ -1,4 +1,4 @@
-import { Heading } from "@chakra-ui/layout"
+import { Heading, Text, VStack } from "@chakra-ui/layout"
 import { useEffect, useState } from "react"
 import useInterval from "../functions/useInterval"
 
@@ -28,7 +28,13 @@ const Countdown = ({to, onFinish}: Props) => {
         if(secondsLeft <= 0) return setSecondsLeft(0)
     }, 1000)
 
-    return <Heading color="white"> {secondsLeft} </Heading>;
+    return (
+        <VStack>
+            <Heading as="h2" size="sm" color="white"> Time Remaining: </Heading>
+            <Text color="white"> {secondsLeft} s </Text>
+        </VStack>
+    )
+    
 }
 
 export default Countdown;

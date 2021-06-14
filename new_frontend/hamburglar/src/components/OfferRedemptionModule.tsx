@@ -57,11 +57,11 @@ const OfferRedemptionModule = ({offerToken}: Props) => {
     ) 
 
     if(redemptionKey) return (
-        <VStack>
+        <VStack mt={3}>
             <OfferCodeModule redemptionKey={redemptionKey} onGetNewKey={getNewKey} />
             <HStack justify="center">
-                <IoAlertCircle color="orange" size="20px"/>
-                <Text color="orange" textAlign="justify" fontSize="small" as="em"> All codes are shared - when redeemed, you have 2 minutes to use the code before it becomes available to others.</Text>
+                <IoAlertCircle color="orange" size="40px"/>
+                <Text color="orange" textAlign="justify" fontSize="small" as="em"> When redeemed, you have a limited time before the offer becomes available to others again.</Text>
             </HStack>
         </VStack>
     ) 

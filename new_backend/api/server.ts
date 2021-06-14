@@ -5,7 +5,7 @@ import cors from '@koa/cors';
 import cron from "node-cron";
 import { Profile } from './interfaces';
 import { get_token_for_account, reallocate_active_accounts, reset_account_token } from './loginmanager';
-import { convert_offer_for_api, decryptToken, get_account_offers, get_all_offers, get_offer_by_id, get_offer_code, get_offer_redemption_key, JWTPayload, obtain_every_account_offers, OfferState, offer_available, save_entire_offers, temp_redeem_offer, verify_redemption_key } from './offersmanager';
+import { cancel_temp_redemption, convert_offer_for_api, decryptToken, get_account_offers, get_all_offers, get_offer_by_id, get_offer_code, get_offer_redemption_key, JWTPayload, obtain_every_account_offers, OfferState, offer_available, save_entire_offers, temp_redeem_offer, verify_redemption_key } from './offersmanager';
 
 // Load Server
 const app = new Koa();
@@ -61,6 +61,22 @@ router.get('/offers/code', async (ctx) => {
 
   const offerCode = await get_offer_code(offer)
   ctx.body = offerCode 
+})
+
+router.get('/key/expire', async (ctx) => {
+  const redemptionKey = ctx.request.query.redemptionKey
+  ctx.assert(redemptionKey !== undefined, 400, 'Required parameter redemptionKey not given.');
+
+  const key = await verify_redemption_key(redemptionKey)
+  ctx.assert(key !== false, 403, 'Redemption key could not be validated. Either invalid or expired.');
+
+  // Token valid, get data and code
+  const keyPayload = key as JWTPayload;
+  const tokenDecrypted = await decryptToken(keyPayload.data)
+  const offerId = Number(tokenDecrypted.split('|')[0])
+  const offer = await get_offer_by_id(offerId)
+
+  await cancel_temp_redemption(offer)
 })
 
 router.get('/key/validity', async (ctx) => {

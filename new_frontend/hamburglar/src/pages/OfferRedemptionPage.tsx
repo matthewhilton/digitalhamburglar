@@ -45,12 +45,12 @@ const OfferRedemptionPage = (props: any) => {
             </HStack>
 
             {redemptionKey && redemptionKey.token === token && !redemptionKey.expired &&
-                <HStack bg="gray.900" p={3} m2={2} mb={2} borderRadius="lg" centerContent>
+                <HStack bg="gray.900" p={3} mt={2} mb={2} borderRadius="lg" centerContent>
                     <IoAlertCircle color="white" size="40px"/>
-                    <Heading as="h2" size="sm" color="white"> You recently redeemed this offer </Heading>
+                    <Heading as="h2" size="sm" color="white"> You recently redeemed this offer. It is reserved temporarily.</Heading>
                 </HStack>
             }
-            
+
             <OfferRedemptionModule offerToken={token} />
           
             </Flex>

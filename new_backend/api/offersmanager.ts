@@ -161,6 +161,43 @@ export const translate_to_offer = async (offer): Promise<Offer> => {
     }
 }
 
+export const cancel_temp_redemption = async(offer: Offer): Promise<void> => {
+    return await validate_offer_status(offer);
+}
+
+const validate_offer_status = async (offer: Offer) => {
+    console.log(`Verifying status of offer ${offer.id}`)
+    if(offer.profile === null) throw new Error("No profile associated with offer")
+    if(offer.id === null) throw new Error('Offer ID was null')
+
+    // Check if offer has actually been redeemed by querying the API
+    const accountToken = await get_token_for_account(offer.profile);
+    const accountOffers = await getAccountOffers(accountToken);
+
+    // See if offer is in the offers for this account
+    const offerStillValid = differenceWith(accountOffers, [offer], offerCompare).length === 1;
+
+    if(offerStillValid){
+        console.log("Offer was not redeemed, making available again...")
+        await prisma.offers.update({
+            where: {
+                id: offer.id
+            },
+            data: {
+                state: OfferState.available
+            }
+        })
+    } else {
+        // Offer was redeemed - delete it
+        console.log("Offer was redeemed, deleting...")
+        await prisma.offers.delete({
+            where: {
+                id: offer.id
+            }
+        })
+    }
+}
+
 export const temp_redeem_offer = async (offer: Offer, timeoutSeconds: number): Promise<void> => {
     if(offer.id === null) throw new Error("Offer ID cannot be null.");
 
@@ -177,33 +214,7 @@ export const temp_redeem_offer = async (offer: Offer, timeoutSeconds: number): P
     
     // Set a timeout to change it back to available.
     setTimeout(async (offer) => {
-        console.log(`Verifying status of offer ${offer.id}`)
-        // Check if offer has actually been redeemed by querying the API
-        const accountToken = await get_token_for_account(offer.profile);
-        const accountOffers = await getAccountOffers(accountToken);
-
-        // See if offer is in the offers for this account
-        const offerStillValid = differenceWith(accountOffers, [offer], offerCompare).length === 1;
-
-        if(offerStillValid){
-            console.log("Offer was not redeemed, making available again...")
-            await prisma.offers.update({
-                where: {
-                    id: offer.id
-                },
-                data: {
-                    state: OfferState.available
-                }
-            })
-        } else {
-            // Offer was redeemed - delete it
-            console.log("Offer was redeemed, deleting...")
-            await prisma.offers.delete({
-                where: {
-                    id: offer.id
-                }
-            })
-        }
+        await validate_offer_status(offer)
     }, timeoutSeconds * 1000, offer)
 }
 

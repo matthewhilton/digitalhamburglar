@@ -3,8 +3,11 @@ import useSWR from "swr";
 import { RedemptionKeyState } from "../redux/store";
 import ErrorDisplay from "../ErrorDisplay";
 import OfferCode from "./OfferCode";
-import { VStack } from "@chakra-ui/layout";
+import { Center, HStack, Text, VStack } from "@chakra-ui/layout";
 import { Button } from "@chakra-ui/button";
+import { CubeSpinner } from "react-spinners-kit";
+import Countdown from "./Countdown";
+import CancelRedemptionButton from "./CancelRedemptionButton";
 
 interface Props {
     redemptionKey: RedemptionKeyState,
@@ -27,6 +30,7 @@ const OfferCodeModule = ({ redemptionKey, onGetNewKey }: Props) => {
 
     const getCode = () => {
         (async () => {
+            setQuery({data: undefined, error: undefined})
             console.log(redemptionKey)
             const res = await fetch(process.env.REACT_APP_API_ENDPOINT + '/offers/code?redemptionKey=' + redemptionKey.key)
             if(!res.ok) {
@@ -59,10 +63,21 @@ const OfferCodeModule = ({ redemptionKey, onGetNewKey }: Props) => {
         </VStack>
     )
 
+    if(!data) return (
+        <Center height="270px">
+            <CubeSpinner backColor="#00ff00" frontColor="green"/>
+        </Center>
+    )
+
     if(data) return (
         <VStack>
           <OfferCode code={data}/>
-          <Button onClick={getCode}> Get New Code </Button>
+          <Countdown to={redemptionKey.expires} />
+
+          <HStack>
+            <CancelRedemptionButton />
+            <Button onClick={getCode}> New Code </Button>
+          </HStack>
         </VStack>
     )
 

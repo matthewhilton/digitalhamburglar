@@ -11,6 +11,7 @@ import useInterval from '../functions/useInterval';
 import { useSelector } from 'react-redux';
 import { StoreState } from '../redux/store';
 import { useHistory } from 'react-router-dom';
+import CancelRedemptionButton from './CancelRedemptionButton';
 
 const OfferRedemptionStatus = () => {
     const key = useSelector((state: StoreState) => state.key);
@@ -19,15 +20,20 @@ const OfferRedemptionStatus = () => {
     if(key !== null && !key.expired) {
         return(
             <Container bg="gray.900" p={3} borderRadius="lg" centerContent>
-                <Heading as="h2" size="sm" color="white"> You recently redeemed an offer </Heading>
+                <Heading as="h2" size="l" color="white" mb={2}> You recently redeemed an offer </Heading>
                 {key.token ? <OfferDetails offerToken={key.token} /> : null}
-                <Button onClick={() => history.push('/redeem/' + key.token)}> View Offer </Button>
 
-                <HStack justify="center">
-                    <IoAlertCircle color="red" size="20px"/>
-                    <Text color="red" textAlign="justify" fontSize="small" as="em"> You can't redeem any more offers until this one is used.</Text>
+                <Countdown to={key.expires} />
+
+                <HStack justify="center" mt={3}>
+                    <IoAlertCircle color="red" size="5vh"/>
+                    <Text color="red" textAlign="justify" fontSize="small" as="em"> You can't redeem any more offers until the offer is used, it expires or is cancelled using the button below.</Text>
                 </HStack>
-                <Text color="gray"> {new Date(key.expires).toLocaleTimeString()} </Text>
+
+                <HStack align={'stretch'} mt={2} mb={2}>
+                    <CancelRedemptionButton />
+                    <Button onClick={() => history.push('/redeem/' + key.token)}> View Offer </Button>
+                </HStack>
             </Container>
         )
     } 

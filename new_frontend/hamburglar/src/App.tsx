@@ -5,6 +5,9 @@ import { BrowserRouter as Router,
           Switch,
           Route } from "react-router-dom"
 import OfferRedemptionPage from "./pages/OfferRedemptionPage"
+import { Provider } from "react-redux"
+import store from "./redux/store"
+import OfferRedemptionIntegrity from "./components/OfferRedemptionIntegrity"
 
 const theme = extendTheme({
   fonts: {
@@ -29,8 +32,10 @@ const theme = extendTheme({
 
 const App = () => (
   <Router>
+    <Provider store={store}>
     <ChakraProvider theme={theme}>
-      <Container maxW="container.md" centerContent={true}>
+      <Container maxW="container.md" centerContent={true} p={5}>
+            <OfferRedemptionIntegrity />
             <Heading color="brand.50" fontWeight="extrabold" marginBottom={3} textAlign="center"> Digital Hamburglar </Heading>
             
             <Switch>
@@ -45,6 +50,7 @@ const App = () => (
             </Switch>
         </Container>
     </ChakraProvider>
+    </Provider>
   </Router>
 )
 

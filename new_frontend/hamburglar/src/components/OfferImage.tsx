@@ -13,7 +13,7 @@ const ImageError = () => (
     </Box>
 )
 
-const OfferImage = ({image, ...restProps}: { image: string} & RestProps) => {
+const OfferImage = ({image, style}: { image: string} & RestProps) => {
     const offerPaths = getOfferImagesPath(image)
 
     // Initially use cdn path (to avoid unneccessary function invocations)
@@ -23,6 +23,7 @@ const OfferImage = ({image, ...restProps}: { image: string} & RestProps) => {
         src={[offerPaths.cdn, offerPaths.func]} 
         loader={<Container centerContent padding="4"><FlagSpinner color="green" /></Container>}
         unloader={<ImageError />}
+        style={style}
         />
     )
 }

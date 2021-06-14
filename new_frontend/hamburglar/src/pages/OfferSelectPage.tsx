@@ -1,9 +1,14 @@
-import { Container, Heading } from "@chakra-ui/layout";
+import { Container, Heading, Text, VStack } from "@chakra-ui/layout";
 import OfferDisplay from "../components/OfferDisplay";
+import OfferRedemptionStatus from "../components/OfferRedemptionStatus";
 
 const OfferSelectPage = () => {   
+
     return (
-        <OfferDisplay />
+        <VStack>
+            <OfferRedemptionStatus />
+            <OfferDisplay />
+        </VStack>
     )
 }
 

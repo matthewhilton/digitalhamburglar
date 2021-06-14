@@ -10,7 +10,7 @@ interface Props {
 
 const OfferGridCard = ({title, image, quantity}: Props) => (
     <Container bg="gray.900" p={3} borderRadius="lg" centerContent>
-        <OfferImage image={image} style={{width: "300px"}} />
+        <OfferImage image={image}/>
         <Text color="gray.100" fontWeight="bold" noOfLines={4} p={1}>{title}</Text>
         <HStack justify="start" direction="row" align="center" width="100%">
             <IoPricetag color="green" />

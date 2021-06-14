@@ -30,7 +30,7 @@ router.get('/offers/redeem', async (ctx) => {
 
   const offerAvailable = await offer_available(offerToken);
   console.log(`Offer ${offerToken} is available: ${offerAvailable}`);
-  ctx.assert(offerAvailable, 400, 'Offer not available to be redeemed');
+  ctx.assert(offerAvailable, 400, 'Offer not available to be redeemed. Go back to the home menu and try again.');
   
   const offerRedemptionKey = await get_offer_redemption_key(offerToken);
 
@@ -60,7 +60,16 @@ router.get('/offers/code', async (ctx) => {
   const offer = await get_offer_by_id(offerId)
 
   const offerCode = await get_offer_code(offer)
-  ctx.body = offerCode
+  ctx.body = offerCode 
+})
+
+router.get('/key/validity', async (ctx) => {
+  const redemptionKey = ctx.request.query.redemptionKey
+  ctx.assert(redemptionKey !== undefined, 400, 'Required parameter redemptionKey not given.');
+
+  const key = await verify_redemption_key(redemptionKey)
+  if(key === false) return ctx.body = false;
+  ctx.body = true;
 })
 
 router.get('/details', async (ctx) => {

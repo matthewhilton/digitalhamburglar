@@ -19,7 +19,6 @@ const OfferDisplay = () => {
     const offerGroups = groupBy(data, 'title')
     const offerGroupKeys = Object.keys(offerGroups)
     const columns = Math.min(offerGroupKeys.length, isBigScreen ? 3 : 2)
-    console.log(offerGroups)
 
     return(
         <SimpleGrid columns={columns} spacing={10}>

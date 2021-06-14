@@ -77,35 +77,40 @@ export const get_token_for_account = async (profile: Profile): Promise<Token> =>
 
 export const reset_account_token = async (profile: Profile): Promise<Token> => {
     // Get brand new token and save to DB
-    const token = await login(profile);
+    try {
+        const token = await login(profile);
     
-    const data = {
-        username: profile.username,
-        password: profile.password,
-        accesstoken: token.accessToken,
-        refreshtoken: token.refreshToken,
-        tokenlastrefreshed: new Date(),
-        state: profile.state,
-    }
-
-    const user = await prisma.accounts.findFirst({
-        where: {
+        const data = {
             username: profile.username,
+            password: profile.password,
+            accesstoken: token.accessToken,
+            refreshtoken: token.refreshToken,
+            tokenlastrefreshed: new Date(),
+            state: profile.state,
         }
-    })
-
-    if(user === null){
-        await prisma.accounts.create({data: data})
-    } else {
-        await prisma.accounts.update({
+    
+        const user = await prisma.accounts.findFirst({
             where: {
-                id: user.id
-            }, 
-            data: data
+                username: profile.username,
+            }
         })
+    
+        if(user === null){
+            await prisma.accounts.create({data: data})
+        } else {
+            await prisma.accounts.update({
+                where: {
+                    id: user.id
+                }, 
+                data: data
+            })
+        }
+    
+        return token;
+    } catch(e){
+        console.error(e)
+        throw new Error("Could not reset account token")
     }
-
-    return token;
 }
 
 export const get_profile_db = async (token: Token): Promise<Profile> => {
@@ -133,7 +138,7 @@ export const reallocate_active_accounts = async (percentageActive: number): Prom
         }
     });
 
-    const numSamples = allAccounts.length - Math.floor(allAccounts.length * percentageActive);
+    const numSamples = Math.floor(allAccounts.length * percentageActive);
     console.log(`Choosing ${numSamples} account(s) to be active`);
     const allocatedActiveAccounts = sampleSize(allAccounts, numSamples);
     const allocatedOutOfRotationAccounts = difference(allAccounts, allocatedActiveAccounts);

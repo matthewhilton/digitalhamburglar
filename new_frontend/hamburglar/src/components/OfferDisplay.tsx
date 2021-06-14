@@ -2,7 +2,7 @@ import useSWR from 'swr'
 import ErrorDisplay from "../ErrorDisplay";
 import { SpiralSpinner } from "react-spinners-kit"
 import { groupBy } from "lodash"
-import { SimpleGrid } from "@chakra-ui/react"
+import { SimpleGrid, Text } from "@chakra-ui/react"
 import OfferGridCard from './OfferGridCard';
 import { useMediaQuery } from 'react-responsive'
 import { Link } from 'react-router-dom'
@@ -20,9 +20,12 @@ const OfferDisplay = () => {
     const offerGroupKeys = Object.keys(offerGroups)
     const columns = Math.min(offerGroupKeys.length, isBigScreen ? 3 : 2)
 
+    if(offerGroupKeys.length === 0) {
+        return(<Text color="white"> No Offers Available </Text>)
+    }
     return(
         <SimpleGrid columns={columns} spacing={10}>
-            {Object.keys(offerGroups).map(key => (
+            {offerGroupKeys.map(key => (
                 <Link to={"/redeem/" + offerGroups[key][0].offertoken} key={key}>
                     <OfferGridCard title={key} image={offerGroups[key][0].image} quantity={offerGroups[key].length}/>
                 </Link>

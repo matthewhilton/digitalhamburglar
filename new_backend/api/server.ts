@@ -103,7 +103,7 @@ router.get('/details', async (ctx) => {
 })
 
 // Account re-allocation happens at 2am every day, or whenever the server is reset
-// reallocate_active_accounts(0.75) // <-- this will automatically check every offer when accounts are reallocated
+reallocate_active_accounts(0.75) // <-- this will automatically check every offer when accounts are reallocated
 cron.schedule('0 2 * * *', () => {
   reallocate_active_accounts(0.75)
 })

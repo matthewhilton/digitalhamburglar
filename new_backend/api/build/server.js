@@ -205,7 +205,7 @@ router.get('/details', function (ctx) { return __awaiter(void 0, void 0, void 0,
     });
 }); });
 // Account re-allocation happens at 2am every day, or whenever the server is reset
-// reallocate_active_accounts(0.75) // <-- this will automatically check every offer when accounts are reallocated
+loginmanager_1.reallocate_active_accounts(0.75); // <-- this will automatically check every offer when accounts are reallocated
 node_cron_1.default.schedule('0 2 * * *', function () {
     loginmanager_1.reallocate_active_accounts(0.75);
 });

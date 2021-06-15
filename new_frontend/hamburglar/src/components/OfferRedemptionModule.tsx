@@ -1,15 +1,10 @@
-import { Center, Container, Heading, HStack, Text, VStack } from "@chakra-ui/layout";
-import { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
-import ErrorDisplay from "../ErrorDisplay";
-import OfferCode from "./OfferCode";
-import useLocalStorageState from 'use-local-storage-state'
-import { jwtDate, jwtExpired } from "../functions/jwtExpired";
-import Countdown from "./Countdown";
+import { HStack, Text, VStack } from "@chakra-ui/layout";
+import { useCallback, useEffect, useState } from "react";
+import ErrorDisplay from "./ErrorDisplay";
+import { jwtDate } from "../functions/jwtExpired";
 import { useDispatch, useSelector } from 'react-redux'
 import { StoreState } from "../redux/store";
 import OfferCodeModule from "./OfferCodeModule";
-import { Button } from "@chakra-ui/button";
 import { IoAlertCircle } from "react-icons/io5";
 
 interface Props {
@@ -21,36 +16,39 @@ const OfferRedemptionModule = ({offerToken}: Props) => {
     const redemptionKey = useSelector((state: StoreState) => state.key)
     const [error, setError] = useState<null | string>(null)
 
-    const getNewKey = () => {
-        (async() => {
-            setError(null)
-            const res = await fetch(process.env.REACT_APP_API_ENDPOINT + '/offers/redeem?offerToken=' + offerToken)
-            if(!res.ok) {
-                if(res.status === 400) return setError(await res.text())
-                setError("Error getting offer")
-                console.error(res.text())
-                return;
-            }
-
-            const json = await res.json();
-            const keyExpires = jwtDate(json.key)
-            
-            dispatch({ object: 'key', type: 'new', data: {
-                token: offerToken,
-                key: json.key,
-                expires: keyExpires,
-                expired: false
-            }})
-            // Dispatching the above will re-run this effect but will not do anything as the key is now not null
-        })()
-    }
+    const getNewKey = useCallback(
+        () => {
+            (async() => {
+                setError(null)
+                const res = await fetch(process.env.REACT_APP_API_ENDPOINT + '/offers/redeem?offerToken=' + offerToken)
+                if(!res.ok) {
+                    if(res.status === 400) return setError(await res.text())
+                    setError("Error getting offer")
+                    console.error(res.text())
+                    return;
+                }
+    
+                const json = await res.json();
+                const keyExpires = jwtDate(json.key)
+                
+                dispatch({ object: 'key', type: 'new', data: {
+                    token: offerToken,
+                    key: json.key,
+                    expires: keyExpires,
+                    expired: false
+                }})
+                // Dispatching the above will re-run this effect but will not do anything as the key is now not null
+            })()
+        },
+        [offerToken, dispatch],
+      );
     
     useEffect(() => {
         if(redemptionKey === null){
             // Get a key
             getNewKey();
         }
-    }, [redemptionKey]);
+    }, [redemptionKey, getNewKey]);
 
     if(error) return (
         <ErrorDisplay error={error} />

@@ -1,4 +1,4 @@
-import { Container, Heading, Text, VStack } from "@chakra-ui/layout";
+import { VStack } from "@chakra-ui/layout";
 import { useSelector } from "react-redux";
 import OfferDisplay from "../components/OfferDisplay";
 import OfferRedemptionStatus from "../components/OfferRedemptionStatus";

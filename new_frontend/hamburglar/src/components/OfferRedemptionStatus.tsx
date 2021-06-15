@@ -1,13 +1,9 @@
-import useLocalStorageState from 'use-local-storage-state'
 import useSWR from "swr"
 import { Container, Heading, HStack, Text } from '@chakra-ui/layout'
 import { Button } from '@chakra-ui/button'
-import jwt_decode from "jwt-decode";
 import OfferImage from './OfferImage';
 import { IoAlertCircle } from 'react-icons/io5';
-import React, { useState } from 'react';
 import Countdown from './Countdown';
-import useInterval from '../functions/useInterval';
 import { useSelector } from 'react-redux';
 import { StoreState } from '../redux/store';
 import { useHistory } from 'react-router-dom';

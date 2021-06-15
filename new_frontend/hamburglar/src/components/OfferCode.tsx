@@ -1,10 +1,7 @@
-import { Box, Center, Heading, Text, VStack } from "@chakra-ui/layout";
-import { useEffect, useState } from "react";
-import { CubeSpinner } from "react-spinners-kit";
-import ErrorDisplay from "../ErrorDisplay";
+import { Box, Heading, VStack } from "@chakra-ui/layout";
+import { useEffect } from "react";
 import { OfferDetails } from "./OfferCodeModule";
 import bwipjs from "bwip-js"
-import Countdown from "./Countdown";
 
 interface Props {
     code: OfferDetails,

@@ -1,5 +1,5 @@
 import useSWR from 'swr'
-import ErrorDisplay from "../ErrorDisplay";
+import ErrorDisplay from "./ErrorDisplay";
 import { SpiralSpinner } from "react-spinners-kit"
 import { groupBy } from "lodash"
 import { SimpleGrid, Text } from "@chakra-ui/react"
@@ -24,7 +24,7 @@ const OfferDisplay = () => {
         return(<Text color="white"> No Offers Available </Text>)
     }
     return(
-        <SimpleGrid columns={columns} spacing={10}>
+        <SimpleGrid columns={columns} spacing={3}>
             {offerGroupKeys.map(key => (
                 <Link to={"/redeem/" + offerGroups[key][0].offertoken} key={key}>
                     <OfferGridCard title={key} image={offerGroups[key][0].image} quantity={offerGroups[key].length}/>

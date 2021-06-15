@@ -1,15 +1,12 @@
-import { Box, Center, Container, Flex, Heading, HStack, Spacer, Text } from "@chakra-ui/layout";
-import { CubeSpinner, SpiralSpinner } from "react-spinners-kit";
-import OfferDisplay from "../components/OfferDisplay";
+import { Box, Container, Flex, Heading, HStack, Spacer, Text } from "@chakra-ui/layout";
+import { SpiralSpinner } from "react-spinners-kit";
 import useSWR from "swr"
-import ErrorDisplay from "../ErrorDisplay";
+import ErrorDisplay from "../components/ErrorDisplay";
 import { useParams, useHistory } from 'react-router-dom'
-import { useState } from "react";
 import OfferImage from "../components/OfferImage";
 import { Button } from "@chakra-ui/button";
 import { IoAlertCircle, IoChevronBackCircleSharp } from "react-icons/io5";
 import OfferRedemptionModule from "../components/OfferRedemptionModule";
-import useLocalStorageState from 'use-local-storage-state'
 import { useSelector } from "react-redux";
 import { StoreState } from "../redux/store";
 

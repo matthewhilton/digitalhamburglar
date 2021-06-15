@@ -3,9 +3,8 @@ import Router from "@koa/router";
 import dotenv from 'dotenv';
 import cors from '@koa/cors';
 import cron from "node-cron";
-import { Profile } from './interfaces';
-import { get_token_for_account, reallocate_active_accounts, reset_account_token } from './loginmanager';
-import { cancel_temp_redemption, convert_offer_for_api, decryptToken, get_account_offers, get_all_offers, get_offer_by_id, get_offer_code, get_offer_redemption_key, JWTPayload, obtain_every_account_offers, OfferState, offer_available, save_entire_offers, temp_redeem_offer, verify_redemption_key } from './offersmanager';
+import { reallocate_active_accounts } from './loginmanager';
+import { cancel_temp_redemption, convert_offer_for_api, decryptToken, get_all_offers, get_offer_by_id, get_offer_code, get_offer_redemption_key, JWTPayload, obtain_every_account_offers, OfferState, offer_available, temp_redeem_offer, verify_redemption_key } from './offersmanager';
 
 // Load Server
 const app = new Koa();
@@ -104,7 +103,7 @@ router.get('/details', async (ctx) => {
 })
 
 // Account re-allocation happens at 2am every day, or whenever the server is reset
-reallocate_active_accounts(0.75)
+// reallocate_active_accounts(0.75) // <-- this will automatically check every offer when accounts are reallocated
 cron.schedule('0 2 * * *', () => {
   reallocate_active_accounts(0.75)
 })

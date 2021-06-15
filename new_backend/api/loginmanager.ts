@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client'
 import { login, refreshToken, testToken } from "./mcdapi";
 import { sampleSize, difference } from "lodash";
 import { Console } from "console";
+import { obtain_every_account_offers } from './offersmanager'
 const prisma = new PrismaClient();
 
 export enum AccountState {
@@ -169,14 +170,17 @@ export const reallocate_active_accounts = async (percentageActive: number): Prom
         await prisma.accounts.updateMany({
             where: {
                 id: {
-                    in: AccountState.OutOfRotation,
+                    in: oorIds,
                 }
             },
             data: {
-                state: 2
+                state: AccountState.OutOfRotation
             }
         })
     }
+
+    // Update every accounts offers to ensure the ones that are out of rotation get removed
+    await obtain_every_account_offers()
 }
 
 export const move_out_of_rotation = async (profile: Profile): Promise<void> => {

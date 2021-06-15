@@ -2,7 +2,7 @@ import { AccountState, get_token_for_account } from "./loginmanager";
 import { ApiOffer, Offer, OfferCode, Profile, Token } from "./interfaces";
 import { getAccountOffers, redeemOffer } from "./mcdapi";
 import { PrismaClient } from '@prisma/client'
-import { flatten, differenceWith, map } from "lodash";
+import { flatten, differenceWith, map, filter } from "lodash";
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 import { resolve } from "path/posix";
@@ -90,6 +90,7 @@ export const save_entire_offers = async(offers: Offer[]): Promise<void> => {
     console.log("Removed Offers:")
     console.log(map(removedOffers, 'title'))
 
+
     // For each new offer, create new offer query
     const offerCreationQueries = newOffers.map(offer => prisma.offers.create({
         data: {
@@ -174,8 +175,8 @@ const validate_offer_status = async (offer: Offer) => {
     const accountToken = await get_token_for_account(offer.profile);
     const accountOffers = await getAccountOffers(accountToken);
 
-    // See if offer is in the offers for this account
-    const offerStillValid = differenceWith(accountOffers, [offer], offerCompare).length === 1;
+    // See if offer is in the offers for this account (i.e. was not redeemed)
+    const offerStillValid = filter(accountOffers, (thisOffer) => offerCompare(offer, thisOffer)).length >= 1;
 
     if(offerStillValid){
         console.log("Offer was not redeemed, making available again...")

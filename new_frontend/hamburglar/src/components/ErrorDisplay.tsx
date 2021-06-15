@@ -1,4 +1,4 @@
-import { Button, Heading, Text, VStack } from "@chakra-ui/react"
+import { Heading, Text, VStack } from "@chakra-ui/react"
 
 const ErrorDisplay = ({error} : {error: string}) => {
     return(

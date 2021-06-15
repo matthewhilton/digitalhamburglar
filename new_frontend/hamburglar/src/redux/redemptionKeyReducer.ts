@@ -1,4 +1,4 @@
-import { Action, RedemptionKeyState, StoreState } from "./store";
+import { RedemptionKeyState, StoreState } from "./store";
 
 const defaultKey: RedemptionKeyState = {
     token: '',

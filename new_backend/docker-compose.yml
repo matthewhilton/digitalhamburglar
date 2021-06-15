@@ -9,3 +9,45 @@ services:
             - ./db/data:/var/lib/postgresql/data
         ports:
             - ${DB_PORT}:5432
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres"]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+        networks:
+            - network
+
+    api:
+        container_name: api
+        build: ./api
+        networks:
+            my-network:
+                aliases:
+                    - api
+        ports:
+            - 4000:4000
+        networks:
+            - network
+        env_file:
+            - ./api/.env
+        depends_on:
+            db:
+                condition: service_healthy
+            
+    nginx:
+        image: nginx
+        container_name: nginx
+        depends_on:
+            - api
+        ports:
+            - 4001:4001
+        networks:
+            - network
+        volumes:
+            - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+            - ./nginx/ssl/RootCA.crt:/etc/ssl/certificate.crt
+            - ./nginx/ssl/RootCA.key:/etc/ssl/certificate.key
+
+networks:
+    network:
+    

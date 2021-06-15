@@ -7,7 +7,7 @@ const defaultKey: RedemptionKeyState = {
     expired: true
 }
 
-const redemptionKeyReducer = (state: StoreState = { key: defaultKey }, action: Action) => {
+const redemptionKeyReducer = (state: StoreState = { key: defaultKey }, action: any) => {
     if(action.object !== 'key') return state;
 
     if(action.type === 'new'){

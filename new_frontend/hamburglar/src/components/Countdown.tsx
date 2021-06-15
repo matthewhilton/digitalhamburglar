@@ -11,7 +11,13 @@ const Countdown = ({to, onFinish}: Props) => {
     const [secondsLeft, setSecondsLeft] = useState(0)
     const [callbackRun, setCallbackRun] = useState(false)
 
+    console.log(to)
+
     useEffect(() => {
+        // If persisted from localstorage, sometimes is given as a string
+        if(typeof to === 'string') to = new Date(to)
+
+        console.log(to)
         const now = new Date();
         const secondsTo = Math.max(0, Math.floor(Math.abs((to.getTime() - now.getTime()) / 1000)))
         setCallbackRun(false)

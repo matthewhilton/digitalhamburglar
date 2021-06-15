@@ -8,6 +8,7 @@ import OfferRedemptionPage from "./pages/OfferRedemptionPage"
 import { Provider } from "react-redux"
 import store from "./redux/store"
 import OfferRedemptionIntegrity from "./components/OfferRedemptionIntegrity"
+import { PersistGate } from 'redux-persist/integration/react'
 
 const theme = extendTheme({
   fonts: {
@@ -32,25 +33,29 @@ const theme = extendTheme({
 
 const App = () => (
   <Router>
-    <Provider store={store}>
-    <ChakraProvider theme={theme}>
-      <Container maxW="container.md" centerContent={true} p={5}>
-            <OfferRedemptionIntegrity />
-            <Heading color="brand.50" fontWeight="extrabold" marginBottom={3} textAlign="center"> Digital Hamburglar </Heading>
-            
-            <Switch>
-              <Route path="/redeem/:token">
-                <OfferRedemptionPage />
-              </Route>
+    
+      <Provider store={store.store}>
+        <PersistGate persistor={store.persistor}>
+          <ChakraProvider theme={theme}>
+            <Container maxW="container.md" centerContent={true} p={5}>
+                  <OfferRedemptionIntegrity />
+                  <Heading color="brand.50" fontWeight="extrabold" marginBottom={3} textAlign="center"> Digital Hamburglar </Heading>
+                  
+                  <Switch>
+                    <Route path="/redeem/:token">
+                      <OfferRedemptionPage />
+                    </Route>
 
-              <Route path="/">
-                <OfferSelectPage />
-              </Route>
+                    <Route path="/">
+                      <OfferSelectPage />
+                    </Route>
 
-            </Switch>
-        </Container>
-    </ChakraProvider>
-    </Provider>
+                  </Switch>
+              </Container>
+          </ChakraProvider>
+        </PersistGate>
+      </Provider>
+
   </Router>
 )
 

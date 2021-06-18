@@ -105,13 +105,23 @@ router.get('/details', async (ctx) => {
 // Account re-allocation happens at 2am every day, or whenever the server is reset
 reallocate_active_accounts(0.75) // <-- this will automatically check every offer when accounts are reallocated
 cron.schedule('0 2 * * *', () => {
-  reallocate_active_accounts(0.75)
+  try {
+    reallocate_active_accounts(0.75)
+  } catch(e) {
+    console.error("Error reallocating accounts")
+    console.error(e)
+  }
 })
 
 // Offer checking interval - every hour or whenver the server is reset
 obtain_every_account_offers()
 cron.schedule('2 * * * *', () => {
-  obtain_every_account_offers()
+  try {
+    obtain_every_account_offers()
+  } catch(e) {
+    console.error("Error getting account offers")
+    console.error(e)
+  }
 })
 
 app.use(cors())

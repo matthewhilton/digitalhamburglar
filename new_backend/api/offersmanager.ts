@@ -191,11 +191,16 @@ const validate_offer_status = async (offer: Offer) => {
     } else {
         // Offer was redeemed - delete it
         console.log("Offer was redeemed, deleting...")
-        await prisma.offers.delete({
-            where: {
-                id: offer.id
-            }
-        })
+        try {
+            await prisma.offers.delete({
+                where: {
+                    id: offer.id
+                }
+            })
+        } catch(e) {
+            console.error("Could not delete offer")
+            console.error(e)
+        }
     }
 }
 
@@ -215,7 +220,12 @@ export const temp_redeem_offer = async (offer: Offer, timeoutSeconds: number): P
     
     // Set a timeout to change it back to available.
     setTimeout(async (offer) => {
-        await validate_offer_status(offer)
+        try {
+            await validate_offer_status(offer)
+        } catch(e) {
+            console.error("Error validating offer status")
+            console.error(e)
+        }
     }, timeoutSeconds * 1000, offer)
 }
 

@@ -207,12 +207,24 @@ router.get('/details', function (ctx) { return __awaiter(void 0, void 0, void 0,
 // Account re-allocation happens at 2am every day, or whenever the server is reset
 loginmanager_1.reallocate_active_accounts(0.75); // <-- this will automatically check every offer when accounts are reallocated
 node_cron_1.default.schedule('0 2 * * *', function () {
-    loginmanager_1.reallocate_active_accounts(0.75);
+    try {
+        loginmanager_1.reallocate_active_accounts(0.75);
+    }
+    catch (e) {
+        console.error("Error reallocating accounts");
+        console.error(e);
+    }
 });
 // Offer checking interval - every hour or whenver the server is reset
 offersmanager_1.obtain_every_account_offers();
 node_cron_1.default.schedule('2 * * * *', function () {
-    offersmanager_1.obtain_every_account_offers();
+    try {
+        offersmanager_1.obtain_every_account_offers();
+    }
+    catch (e) {
+        console.error("Error getting account offers");
+        console.error(e);
+    }
 });
 app.use(cors_1.default());
 app.use(router.routes());

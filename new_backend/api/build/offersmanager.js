@@ -246,7 +246,7 @@ var cancel_temp_redemption = function (offer) { return __awaiter(void 0, void 0,
 }); };
 exports.cancel_temp_redemption = cancel_temp_redemption;
 var validate_offer_status = function (offer) { return __awaiter(void 0, void 0, void 0, function () {
-    var accountToken, accountOffers, offerStillValid;
+    var accountToken, accountOffers, offerStillValid, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -274,19 +274,27 @@ var validate_offer_status = function (offer) { return __awaiter(void 0, void 0, 
                     })];
             case 3:
                 _a.sent();
-                return [3 /*break*/, 6];
+                return [3 /*break*/, 8];
             case 4:
                 // Offer was redeemed - delete it
                 console.log("Offer was redeemed, deleting...");
+                _a.label = 5;
+            case 5:
+                _a.trys.push([5, 7, , 8]);
                 return [4 /*yield*/, prisma.offers.delete({
                         where: {
                             id: offer.id
                         }
                     })];
-            case 5:
+            case 6:
                 _a.sent();
-                _a.label = 6;
-            case 6: return [2 /*return*/];
+                return [3 /*break*/, 8];
+            case 7:
+                e_1 = _a.sent();
+                console.error("Could not delete offer");
+                console.error(e_1);
+                return [3 /*break*/, 8];
+            case 8: return [2 /*return*/];
         }
     });
 }); };
@@ -309,12 +317,21 @@ var temp_redeem_offer = function (offer, timeoutSeconds) { return __awaiter(void
                 console.log("Offer " + offer.id + " temporarily redeemed");
                 // Set a timeout to change it back to available.
                 setTimeout(function (offer) { return __awaiter(void 0, void 0, void 0, function () {
+                    var e_2;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0: return [4 /*yield*/, validate_offer_status(offer)];
+                            case 0:
+                                _a.trys.push([0, 2, , 3]);
+                                return [4 /*yield*/, validate_offer_status(offer)];
                             case 1:
                                 _a.sent();
-                                return [2 /*return*/];
+                                return [3 /*break*/, 3];
+                            case 2:
+                                e_2 = _a.sent();
+                                console.error("Error validating offer status");
+                                console.error(e_2);
+                                return [3 /*break*/, 3];
+                            case 3: return [2 /*return*/];
                         }
                     });
                 }); }, timeoutSeconds * 1000, offer);

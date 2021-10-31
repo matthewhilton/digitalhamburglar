@@ -13,3 +13,20 @@ export interface Device {
     isActive: string,
     timezone: string
 }
+
+export interface Token {
+    accessToken: string,
+    refreshToken: string
+}
+
+export interface Offer {
+    id: number,
+    propositionId: number,
+    name: string, 
+    shortDescription: string, 
+    longDescription: string, 
+    offerBucket: string, 
+    validToUTC: string,
+    profileId: string,
+    hash: string
+}

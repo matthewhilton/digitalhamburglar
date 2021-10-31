@@ -1,12 +1,11 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions"
 import { CosmosClient } from "@azure/cosmos";
-import { login } from "../src/McdApi";
-import { Profile } from "../src/interfaces";
+import { getOffers, login, validateToken } from "../src/McdApi";
+import { Offer, Profile, Token } from "../src/interfaces";
 
 const client = new CosmosClient(process.env['CosmosDbConnectionString']);
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-
   const accountId = req.query.accountId;
 
   if (!accountId) {
@@ -17,8 +16,8 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     return;
   };
 
-  const { database } = await client.databases.createIfNotExists({ id: "Accounts" });
-  const { container } = await database.containers.createIfNotExists({ id: "Accounts" });
+  const accountsDatabase = await client.databases.createIfNotExists({ id: "Accounts" });
+  const accountsContainer = await accountsDatabase.database.containers.createIfNotExists({ id: "Accounts" });
 
   // Lookup account by ID
   const querySpec = {
@@ -30,7 +29,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
       }
     ]
   };
-  const { resources: results } = await container.items.query(querySpec).fetchAll();
+  const { resources: results } = await accountsContainer.container.items.query(querySpec).fetchAll();
 
   if (results.length === 0) {
     context.res = {
@@ -40,17 +39,66 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     return;
   }
 
-  const profile = results[0] as Profile;
+  const account = results[0]
 
-  // Login to account
-  const accessToken = await login(profile);
+  const profile = {
+    username: account.email,
+    password: account.password
+  } as Profile;
 
-  // TODO login, etc...
+  try {
+    // See if account has access token, token is less than 30 minutes old
+    const tokenAlreadyExists = (account.accessToken && new Date().getTime() - account.lastLogin < 1000*60*30)
 
-  // DEBUG  - return account info
-  context.res = {
-    body: accessToken
-  }
+    // If token exists, validate it
+    const tokenValid = tokenAlreadyExists ? await validateToken(account.accessToken) : false;
+
+    context.log(`Profile ${account.id} - token already exists: ${tokenAlreadyExists}, token valid: ${tokenValid}`)
+
+    // Use existing token or login and store the token
+    const token = (tokenAlreadyExists && tokenValid) ? { accessToken: account.accessToken, refreshToken: account.refreshToken} as Token : await loginAndStoreToken(profile, account, accountsContainer.container);
+
+    // Get the offers for this account using the token
+    const offers = await getOffers(accountId, token.accessToken);
+    context.log(`Profile ${account.id} - got ${offers.length} offers`)
+
+    // Store offers in Db
+    const offersDatabase = await client.databases.createIfNotExists({ id: "Offers" });
+    const offersContainer = await offersDatabase.database.containers.createIfNotExists({ id: "Offers" });
+
+    await storeOffers(account.id, offers, offersContainer.container);
+  } catch (e) {
+    context.res = {
+      status: 500,
+      body: e.message 
+    }
+  } 
 };
+
+const storeOffers = async(accountId: string, offers: Offer[], dbContainer: any): Promise<void> => {
+  const offersUpdate = {
+    id: accountId,
+    offers: offers
+  }
+
+  await dbContainer.items.upsert(offersUpdate);
+
+  return;
+}
+
+const loginAndStoreToken = async (profile: Profile, account: any, dbContainer: any): Promise<Token> => {
+  const token = await login(profile);
+
+  const accountUpdate = {
+    ...account,
+    accessToken: token.accessToken,
+    refreshToken: token.refreshToken,
+    lastLogin: new Date().getTime()
+  }
+
+  await dbContainer.items.upsert(accountUpdate);
+
+  return token;
+}
 
 export default httpTrigger;

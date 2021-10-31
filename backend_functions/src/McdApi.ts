@@ -1,8 +1,8 @@
-import { randomBytes } from "crypto";
+import { randomBytes, createHash } from "crypto";
 import wretch from "wretch";
 import { retry } from 'wretch-middlewares'
 import { v4 as uuidv4 } from 'uuid';
-import { Profile } from "./interfaces";
+import { Offer, Profile, Token } from "./interfaces";
 import "isomorphic-fetch"
 
 const clientId = "724uBz3ENHxUMrWH73pekFvUKvj8fD7X";
@@ -49,9 +49,8 @@ export const get_bearer_unauth = async (): Promise<string | null> => {
         })
 }
 
-export const login = async (profile: Profile, deviceId = uuidv4(), type="email") : Promise<string | null> => {
+export const login = async (profile: Profile, deviceId = uuidv4(), type="email") : Promise<Token | null> => {
     const unauthToken = await get_bearer_unauth();
-
 
     return await wretch()
         .url("https://ap-prod.api.mcd.com/exp/v1/customer/login")
@@ -80,10 +79,57 @@ export const login = async (profile: Profile, deviceId = uuidv4(), type="email")
         }))
         .post()
         .json(json => {
-            console.log(json.response)
-            return json.response.accessToken;
+            return {
+                accessToken: json.response.accessToken,
+                refreshToken: json.response.refreshToken
+            } as Token;
         })
+}
 
-    // Some error
-    return null;
+export const getOffers = async (accountId: string, accessToken: string): Promise<Offer[]> => {
+    return await wretch()
+    .url("https://ap-prod.api.mcd.com/exp/v1/offers")
+    .headers({
+        'authorization': 'Bearer ' + accessToken,
+        'mcd-clientid': clientId,
+        'accept-language': "en-AU",
+        'user-agent': 'MCDSDK/8.0.15 (iPhone; 14.3; en-AU) GMA/6.2'
+    })
+    .get()
+    .json(json => {
+        const offers = json.response.offers.map(offer => ({
+                id: offer.offerId,
+                propositionId: offer.offerPropositionId,
+                name: offer.name,
+                shortDescription: offer.shortDescription,
+                longDescription: offer.longDescription,
+                offerBucket: offer.offerBucket,
+                validToUTC: offer.validToUTC,
+                hash: createHash('sha256').update(offer.name + accountId).digest('hex')
+            } as Offer 
+        ))
+
+        // Filter out the punchcard rewards (not supported)
+        const filteredOffers = offers.filter(offer => offer.offerBucket !== "PunchcardReward");
+
+        return filteredOffers;
+    })
+}
+
+export const validateToken = async (accessToken: string): Promise<boolean> => {
+    return await wretch()
+        .url("https://ap-prod.api.mcd.com/exp/v1/offers")
+        .headers({
+            'authorization': 'Bearer ' + accessToken,
+            'mcd-clientid': clientId,
+            'accept-language': "en-AU",
+            'user-agent': 'MCDSDK/8.0.15 (iPhone; 14.3; en-AU) GMA/6.2'
+        })
+        .get()
+        .json(json => {
+            return true;
+        })
+        .catch(err => {
+            return false;
+        })
 }

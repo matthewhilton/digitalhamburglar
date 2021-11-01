@@ -2,7 +2,7 @@ import { randomBytes, createHash } from "crypto";
 import wretch from "wretch";
 import { retry } from 'wretch-middlewares'
 import { v4 as uuidv4 } from 'uuid';
-import { Offer, Profile, Token } from "./interfaces";
+import { Offer, OfferCode, Profile, Token } from "./interfaces";
 import "isomorphic-fetch"
 
 const clientId = "724uBz3ENHxUMrWH73pekFvUKvj8fD7X";
@@ -71,7 +71,7 @@ export const login = async (profile: Profile, deviceId = uuidv4(), type="email")
         })
         .body(JSON.stringify({
             "credentials": {
-                "loginUsername": profile.username,
+                "loginUsername": profile.email,
                 "password": profile.password,
                 "type": type
             },
@@ -81,7 +81,8 @@ export const login = async (profile: Profile, deviceId = uuidv4(), type="email")
         .json(json => {
             return {
                 accessToken: json.response.accessToken,
-                refreshToken: json.response.refreshToken
+                refreshToken: json.response.refreshToken,
+                lastLogin: new Date().getTime()
             } as Token;
         })
 }
@@ -105,6 +106,7 @@ export const getOffers = async (accountId: string, accessToken: string): Promise
                 longDescription: offer.longDescription,
                 offerBucket: offer.offerBucket,
                 validToUTC: offer.validToUTC,
+                accountId,
                 hash: createHash('sha256').update(offer.name + accountId).digest('hex')
             } as Offer 
         ))
@@ -132,4 +134,29 @@ export const validateToken = async (accessToken: string): Promise<boolean> => {
         .catch(err => {
             return false;
         })
+}
+
+export const getOfferCode = async (offerId: number, propositionId: number, accessToken: string): Promise<OfferCode> => {
+    
+    let url = `https://ap-prod.api.mcd.com/exp/v1/offers/redemption/${String(propositionId)}`
+    
+    // Sometimes an offerID is zero, if this is the case do not append it to the end or else it causes errors 
+    if(offerId != 0){
+        url += "?offerId=" + String(offerId)
+    }
+
+    return await wretch()
+        .url(url)
+        .headers({
+            'authorization': 'Bearer ' + accessToken,
+            'mcd-clientid': clientId,
+            'accept-language': "en-AU",
+            'user-agent': 'MCDSDK/8.0.15 (iPhone; 14.3; en-AU) GMA/6.2'
+        })
+        .get()
+        .json(json => ({
+            code: json.response.randomCode,
+            barcodeData: json.response.barCodeContent,
+            expirationTime: json.response.expirationTime
+        }) as OfferCode)
 }

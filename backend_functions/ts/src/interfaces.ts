@@ -1,8 +1,7 @@
 export interface Profile {
-    username: string,
+    email: string,
     password: string,
-    created: Date,
-    id: number
+    id: string
 }
 
 export interface Device {
@@ -16,7 +15,8 @@ export interface Device {
 
 export interface Token {
     accessToken: string,
-    refreshToken: string
+    refreshToken: string,
+    lastLogin: number
 }
 
 export interface Offer {
@@ -28,5 +28,19 @@ export interface Offer {
     offerBucket: string, 
     validToUTC: string,
     profileId: string,
-    hash: string
+    hash: string,
+    accountId: string
+}
+
+export interface OfferClaim {
+    id: number,
+    expiry: number,
+    offerHash: string,
+    claimKey: string
+}
+
+export interface OfferCode {
+    code: string,
+    barcodeData: string,
+    expirationTime: string,
 }

@@ -44,7 +44,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
 
     // Else generate and save a claim and return to user
     const newOfferClaim = {
-      id: randomBytes(256).toString('hex'),
+      id: randomBytes(32).toString('hex'),
       offerHash: offerHash,
       expiry: new Date().getTime() + 1000 * 60 * 5 // expires in 5 minutes time
     }

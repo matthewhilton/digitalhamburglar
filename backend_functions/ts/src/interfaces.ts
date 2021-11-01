@@ -34,7 +34,7 @@ export interface Offer {
 }
 
 export interface OfferClaim {
-    id: number,
+    id: string,
     expiry: number,
     offerHash: string,
     claimKey: string

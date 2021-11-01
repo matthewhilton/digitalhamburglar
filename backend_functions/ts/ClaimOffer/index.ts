@@ -1,7 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions"
 import { CosmosClient } from "@azure/cosmos";
 import { randomBytes } from "crypto";
-import { OfferClaim } from "../src/interfaces";
 import { getOfferClaims, getSavedOffer } from "../src/offers";
 import { ServiceBusClient } from "@azure/service-bus";
 

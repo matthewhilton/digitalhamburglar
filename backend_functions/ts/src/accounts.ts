@@ -26,6 +26,12 @@ export const getAccountById = async (accountId: string, dbContainer: Container):
     return account;
 }
 
+export const getAllAccountIds = async (dbContainer: Container): Promise<string[]> => {
+    const { resources: accountResults } = await dbContainer.items.readAll().fetchAll();
+
+    return accountResults.map(result => result.id);
+}
+
 export const getAccountToken = async (accountId: string, dbContainer: Container): Promise<Token> => {
     const accountTokenQuerySpec = {
         query: "SELECT * FROM Accounts a WHERE a.id = @accountid",
@@ -49,8 +55,9 @@ export const getAccountToken = async (accountId: string, dbContainer: Container)
     return token;
 }
 
-export const saveToken = async (accountId: string, token: Token, dbContainer: Container): Promise<Token> => {
+export const saveToken = async (profile: Profile, accountId: string, token: Token, dbContainer: Container): Promise<Token> => {
     const accountUpdate = {
+        ...profile,
       id: accountId,
       accessToken: token.accessToken,
       refreshToken: token.refreshToken,
@@ -79,7 +86,7 @@ export const getAndCacheAccountToken = async(accountId: string, dbContainer: Con
     const newToken = await login(accountProfile);
 
     // Save token.
-    await saveToken(accountProfile.id, newToken, dbContainer);
+    await saveToken(accountProfile, accountProfile.id, newToken, dbContainer);
 
     return newToken;
 }

@@ -3,8 +3,13 @@ import { CosmosClient } from "@azure/cosmos";
 import { randomBytes } from "crypto";
 import { OfferClaim } from "../src/interfaces";
 import { getOfferClaims, getSavedOffer } from "../src/offers";
+import { ServiceBusClient } from "@azure/service-bus";
 
 const client = new CosmosClient(process.env['CosmosDbConnectionString']);
+const serviceBusClient = new ServiceBusClient(process.env['ServiceBusUpdateAccountOffers']);
+const serviceBusQueue = "accountupdates";
+
+const sender = serviceBusClient.createSender(serviceBusQueue);
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
   const offerHash = req.query.offerHash;
@@ -45,6 +50,12 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     }
 
     await offersClaimsContainer.items.upsert(newOfferClaim);
+
+    // Send a message to a service bus to update the accounts offers in 5 minutes time (to check if the offer was actually redeemed or not)
+    sender.scheduleMessages({
+      body: {
+      accountId: offer.accountId
+    }}, new Date(new Date().getTime() + 1000 * 60 * 5))
 
     context.res = {
       body: newOfferClaim

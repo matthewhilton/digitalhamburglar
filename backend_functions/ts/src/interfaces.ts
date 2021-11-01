@@ -29,7 +29,8 @@ export interface Offer {
     validToUTC: string,
     profileId: string,
     hash: string,
-    accountId: string
+    accountId: string,
+    image: string
 }
 
 export interface OfferClaim {

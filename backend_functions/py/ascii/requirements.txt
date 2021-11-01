@@ -1,0 +1,7 @@
+Pillow
+wget
+hashlib
+json
+argparse
+opencv-python
+numpy

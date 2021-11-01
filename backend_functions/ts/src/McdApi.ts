@@ -107,6 +107,7 @@ export const getOffers = async (accountId: string, accessToken: string): Promise
                 offerBucket: offer.offerBucket,
                 validToUTC: offer.validToUTC,
                 accountId,
+                image: offer.imageBaseName,
                 hash: createHash('sha256').update(offer.name + accountId).digest('hex')
             } as Offer 
         ))

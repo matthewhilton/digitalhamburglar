@@ -1,6 +1,7 @@
 import { Container } from "@azure/cosmos";
 import { Offer, OfferClaim } from "./interfaces";
 
+
 export const getSavedOffer = async (offerHash: string, dbContainer: Container): Promise<Offer | null> => {
     const querySpec = {
         query: "SELECT * FROM o IN Offers.offers WHERE o.hash = @offerhash",

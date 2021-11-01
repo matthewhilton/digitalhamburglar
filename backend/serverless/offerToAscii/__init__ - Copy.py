@@ -16,10 +16,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info("Loading environment variables...")
     load_dotenv()
 
-    conn_string = os.environ["ImageStorageAccountConnectionString"]
+    conn_string = os.getenv("AZURE_BLOB_CONNECTION_STRING")
 
     if conn_string is None:
-        logging.info("Storage account connection string was None")
+        logging.info("Connecting string was None")
         return func.HttpResponse(
              "Server Error",
              status_code=500
@@ -42,7 +42,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         ascii_image_filename_blob = hashlib.md5(image.encode('utf-8')).hexdigest() + '.jpg'
         
         # See if exists already in blob storage
-        blob_get_str = "https://offerimagestorev4.blob.core.windows.net/images/{0}".format(ascii_image_filename_blob)
+        blob_get_str = "https://offerimagestore.blob.core.windows.net/images/{0}".format(ascii_image_filename_blob)
         if does_blob_exist(blob_get_str):
             logging.info("Blob exists, redirecting...")
             blob_redirect = redirect_to_blob(blob_get_str)

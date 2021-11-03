@@ -59,7 +59,7 @@ def asciify_image(input_image_path):
                 values = pixels[i,j]
                 offset = 40
                 average = (sum(values) + offset) // (len(values) + 1)
-                pixels[i,j] = (0,average,0)
+                pixels[i,j] = (average,0,average // 2)
 
         # Do something with image such as upload to S3...
         # TODO

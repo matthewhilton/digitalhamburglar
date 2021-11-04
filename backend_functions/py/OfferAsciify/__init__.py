@@ -54,6 +54,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         offer_base_url = "https://au-prod-us-cds-oceofferimages.s3.amazonaws.com/oce3-au-prod/offers/"
         offer_image_url = offer_base_url + image
 
+
         logging.info("Getting temp directory...")
         tempdir = tempfile.gettempdir()
 
@@ -62,7 +63,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         logging.info("Downloading offer from aws...")
         logging.info("Downloading {0} to {1}".format(offer_image_url, tempdir))
 
-        # Download the offer image from aws -> temp directory
+        #Download the offer image from aws -> temp directory
         offer_original_filename = wget.download(offer_image_url, os.path.join(tempdir, uuid.uuid1().hex + ".jpg"))
 
         logging.info("Downloaded as {0}".format(offer_original_filename))

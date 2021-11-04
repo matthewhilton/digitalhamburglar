@@ -18,7 +18,7 @@ const timerTrigger: AzureFunction = async function (context: Context, myTimer: a
         context.log('Timer function is running late!');
     }
     context.log('Timer trigger function ran!', timeStamp);  
-
+    
     // Get all the account ID's
     const accountsDatabase = await client.databases.createIfNotExists({ id: "Accounts" });
     const accountsContainerResponse = await accountsDatabase.database.containers.createIfNotExists({ id: "Accounts" });
@@ -32,8 +32,8 @@ const timerTrigger: AzureFunction = async function (context: Context, myTimer: a
         }
     }))
 
-    console.log("Sending batch update:")
-    console.log(batchMessages)
+    context.log("Sending batch update:")
+    context.log(batchMessages)
 
     // Send as a batch
     await sender.sendMessages(batchMessages);

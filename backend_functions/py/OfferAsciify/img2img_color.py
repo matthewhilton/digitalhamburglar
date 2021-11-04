@@ -35,7 +35,7 @@ def main(opt):
     else:
         bg_code = (0, 0, 0)
 
-    font_path = os.path.join(os.getcwd(),"offerToAscii","fonts","DejaVuSansMono-Bold.ttf")
+    font_path = os.path.join(os.getcwd(),"OfferAsciify","fonts","DejaVuSansMono-Bold.ttf")
     logger.info("Font path {0}".format(font_path))
     font = ImageFont.truetype(font_path, size=10 * opt.scale)
     num_chars = len(CHAR_LIST)

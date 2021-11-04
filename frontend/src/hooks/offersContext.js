@@ -1,26 +1,17 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext } from "react";
+import useSWR from 'swr'
+import fetch from 'unfetch'
+
+const fetcher = url => fetch(url).then(r => r.json())
 
 const OffersContext = createContext(null);
 
 const OffersContextProvider = ({children}) => {
-    const [res, setRes] = useState({data: null, error: null})
+    const { data, error } = useSWR('https://hamburglarapi.azure-api.net/hamburglarv4/offers', fetcher)
 
-    useEffect(async () => {
-        try {
-            const res = await fetch('https://hamburglarapi.azure-api.net/hamburglarv4/offers');
-            const json = await res.json();
-
-            if(res.status !== 200) {
-                setRes({data: null, error: json});
-                return;
-            }
-    
-            setRes({data: json, error: null});
-        } catch (err) {
-            setRes({data: null, error: err.message});
-        }
-        
-    }, [])
+    const res = {
+        data, error
+    }
 
     return <OffersContext.Provider value={res}>
         {children}

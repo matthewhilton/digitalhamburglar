@@ -53,8 +53,9 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     // Send a message to a service bus to update the accounts offers in 5 minutes time (to check if the offer was actually redeemed or not)
     sender.scheduleMessages({
       body: {
-      accountId: offer.accountId
-    }}, new Date(new Date().getTime() + 1000 * 60 * 5))
+        accountId: offer.accountId
+      }
+    }, new Date(new Date().getTime() + 1000 * 60 * 5))
 
     context.res = {
       body: newOfferClaim
@@ -63,7 +64,9 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
   } catch (e) {
     context.res = {
       status: 500,
-      body: e.message
+      body: {
+        error: e.message
+      }
     }
     return;
   }

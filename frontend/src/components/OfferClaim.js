@@ -1,10 +1,9 @@
 import { OfferClaimContext } from "../hooks/offerClaimContext"
-import { useContext, useState } from "react"
+import { useContext, useState, useEffect } from "react"
 import { FaBolt } from "react-icons/fa";
 import OfferCode from "./OfferCode";
 import { OffersContext } from "../hooks/offersContext";
 import { Link } from "react-router-dom";
-import { useEffect } from "react/cjs/react.development";
 
 export default function OfferClaim({ hash }) {
     const { claim: offerClaim, setClaim: setOfferClaim } = useContext(OfferClaimContext)

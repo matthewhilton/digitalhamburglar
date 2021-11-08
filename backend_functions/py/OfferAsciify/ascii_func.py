@@ -48,7 +48,7 @@ def asciify_image(input_image_path):
 
         # Add contrast
         enhancer = ImageEnhance.Contrast(im)
-        im = enhancer.enhance(2)
+        im = enhancer.enhance(4)
 
         # Add color filter 
         im = im.convert("RGB")
@@ -59,10 +59,11 @@ def asciify_image(input_image_path):
                 values = pixels[i,j]
                 offset = 40
                 average = (sum(values) + offset) // (len(values) + 1)
-                pixels[i,j] = (average,0,average // 2)
+                pixels[i,j] = (0,average,average // 2)
 
-        # Do something with image such as upload to S3...
-        # TODO
+        # Add brightness
+        brightness_enhancer = ImageEnhance.Brightness(im)
+        im = brightness_enhancer.enhance(1.2)
 
         im.save(temp_file_path)
         logger.info("Asciified image saved to {0}".format(temp_file_path))

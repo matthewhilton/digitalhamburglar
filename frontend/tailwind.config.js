@@ -7,7 +7,16 @@ module.exports = {
     fontFamily: {
       'display': ['Source Code Pro']
     },
-    extend: {},
+    extend: {
+      colors: {
+        "title": {
+          100: '#1bf298'
+        },
+        gray: {
+          200: "#151717"
+        }
+      }
+    },
   },
   variants: {
     extend: {

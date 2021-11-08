@@ -17,11 +17,11 @@ function App() {
   return (
     <OfferClaimContextProvider>
       <OffersContextProvider>
-        <div className="flex flex-col"  style={{height: "100%", backgroundColor: "#121212"}}>
+        <div className="flex flex-col mb-10" style={{backgroundColor: "black"}}>
           <Router>
           <Link to="/">
             <div className="justify-items-center">
-              <h1 className="text-4xl font-display text-pink-700 text-center mt-5"> <Typist cursor={cursor}> <Typist.Delay ms={1000}  /> Digital Hamburglar  </Typist></h1>
+              <h1 className="text-4xl font-display text-title-100 text-center mt-5"> <Typist cursor={cursor}> <Typist.Delay ms={1000}  /> Digital Hamburglar  </Typist></h1>
             </div>
           </Link>
             <Switch>

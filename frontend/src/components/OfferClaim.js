@@ -49,7 +49,7 @@ export default function OfferClaim({ hash }) {
 
     // No offer claim, show button
     if (!offerClaim) return (
-        <button className="bg-pink-700 rounded-lg text-white font-bold shadow-xl p-4 m-5 bg-blend-lighten active:bg-pink-800" onClick={claimOffer}>
+        <button className="bg-green-700 rounded-lg text-white font-bold shadow-xl p-4 m-5 bg-blend-lighten active:bg-green-800" onClick={claimOffer}>
             <div className="flex flex-row justify-items-center content-center items-center gap-4">
                 <p> Claim Offer </p>
                 <FaBolt style={{ height: 25 }} />
@@ -57,9 +57,10 @@ export default function OfferClaim({ hash }) {
         </button>
     )
 
+    // Offer claim - show code.
     if (offerClaim) return (
         <div className="flex flex-col justify-items-center content-center items-center gap-4 max-w-xs">
-            <h2 className="text-pink-200 font-bold text-xl"> Your Offer Code </h2>
+            <h2 className="text-white font-bold text-xl mt-5"> Your Offer Code </h2>
             <OfferCode claim={offerClaim} onDeleteClaim={() => unClaimOffer()}/>
         </div>
     )

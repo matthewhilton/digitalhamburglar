@@ -1,2 +1,4 @@
 # digitalhamburglar
-Digital Hamburglar is a NodeJS server and Reactjs Frontend that get offers from multiple accounts and collate them into a single webpage.
+Digital Hamburglar is a web app that gets offers from multiple accounts and collates them into a single webpage.
+
+It uses a completely serverless architecture, built on Azure functions. Additionally it uses Azure storage, service bus, DNS and API management.
